@@ -604,7 +604,7 @@ const FAQ_ITEMS = [
   { q: 'How do I track my order?',            a: 'Go to the Orders tab. Each order shows real-time status updates directly from the vendor.' },
   { q: 'Can I return a product?',             a: 'Yes. Open the order within 7 days of delivery and tap "Request Return". Novara mediates all disputes.' },
   { q: 'How do I contact a vendor directly?', a: 'On any product page or vendor store page, tap "Chat with Vendor" to start a direct conversation in the Messages tab.' },
-  { q: 'How do I become a vendor?',           a: 'Visit novara.app/vendor/apply or go to Settings → Upgrade to Vendor. It takes under 5 minutes.' },
+  { q: 'How do I become a vendor?',           a: 'Visit novaraquickbuy.vercel.app/vendor/apply or go to Settings → Upgrade to Vendor. It takes under 5 minutes.' },
   { q: 'Is my payment information secure?',   a: 'Yes. Novara uses Paystack, Flutterwave and Stripe — all PCI-DSS compliant. We never store your card details.' },
 ]
 const SUPPORT_CATEGORIES = [

@@ -20,7 +20,7 @@ const notoArabic = Noto_Sans_Arabic({
 })
 
 export const metadata = {
-  metadataBase: new URL('https://novara.app'),
+  metadataBase: new URL('https://novaraquickbuy.vercel.app'),
   title: {
     default:  'Novara Quickbuy — Shop. Discover. Connect.',
     template: '%s | Novara Quickbuy',

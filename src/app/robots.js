@@ -3,6 +3,6 @@ export default function robots() {
     rules: [
       { userAgent: '*', allow: '/', disallow: ['/vendor/', '/checkout/', '/cart/'] },
     ],
-    sitemap: 'https://novara.app/sitemap.xml',
+    sitemap: 'https://novaraquickbuy.vercel.app/sitemap.xml',
   }
 }
