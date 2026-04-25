@@ -14,7 +14,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse }        from 'next/server'
 
-export async function middleware(request) {
+export async function proxy(request) {
   let response = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -210,7 +210,7 @@ export async function middleware(request) {
   return response
 }
 
-export default middleware
+export default proxy
 
 export const config = {
   matcher: [
