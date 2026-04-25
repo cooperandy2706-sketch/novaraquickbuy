@@ -1,0 +1,1 @@
+export const NOTIFICATION_TYPES = { NEW_ORDER:'new_order',ORDER_STATUS:'order_status',DELIVERY_UPDATE:'delivery_update',NEW_MESSAGE:'new_message',CIRCLE_BROADCAST:'circle_broadcast',LOW_STOCK:'low_stock',OUT_OF_STOCK:'out_of_stock',PAYMENT_RELEASED:'payment_released',FLASH_SALE:'flash_sale' }

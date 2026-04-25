@@ -1,0 +1,30 @@
+{
+  "app": {
+    "name": "Novara Quickbuy",
+    "tagline": "Achetez. Découvrez. Connectez."
+  },
+  "nav": {
+    "home": "Accueil",
+    "explore": "Explorer",
+    "chat": "Messages",
+    "wishlist": "Favoris",
+    "profile": "Profil",
+    "cart": "Panier",
+    "search": "Rechercher",
+    "notifications": "Notifications"
+  },
+  "actions": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "confirm": "Confirmer",
+    "continue": "Continuer",
+    "back": "Retour",
+    "close": "Fermer",
+    "submit": "Soumettre",
+    "loading": "Chargement...",
+    "retry": "Réessayer",
+    "viewAll": "Voir tout"
+  }
+}

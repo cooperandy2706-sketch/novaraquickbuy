@@ -1,0 +1,24 @@
+{
+  "app": {
+    "name": "Novara Quickbuy",
+    "tagline": "Nunua. Gundua. Unganika."
+  },
+  "nav": {
+    "home": "Nyumbani",
+    "explore": "Gundua",
+    "chat": "Mazungumzo",
+    "wishlist": "Vipendwa",
+    "profile": "Wasifu",
+    "cart": "Mkokoteni",
+    "search": "Tafuta",
+    "notifications": "Arifa"
+  },
+  "actions": {
+    "save": "Hifadhi",
+    "cancel": "Ghairi",
+    "continue": "Endelea",
+    "back": "Rudi",
+    "loading": "Inapakia...",
+    "viewAll": "Ona yote"
+  }
+}
