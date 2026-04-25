@@ -3,6 +3,7 @@
 import { Plus_Jakarta_Sans, Noto_Sans_Arabic } from 'next/font/google'
 import { Toaster }    from 'react-hot-toast'
 import Providers      from '@/components/Providers'
+import UpdateCheck    from '@/components/global/UpdateCheck'
 import '@/app/globals.css'
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -25,7 +26,29 @@ export const metadata = {
     default:  'Novara Quickbuy — Shop. Discover. Connect.',
     template: '%s | Novara Quickbuy',
   },
-  description: 'Global social commerce marketplace. Discover products through video.',
+  description: 'Global social commerce marketplace. Discover products through video reviews and community circles.',
+  openGraph: {
+    title:       'Novara Quickbuy — Shop. Discover. Connect.',
+    description: 'Global social commerce marketplace. Discover products through video reviews and community circles.',
+    url:         'https://novaraquickbuy.vercel.app',
+    siteName:    'Novara Quickbuy',
+    images: [
+      {
+        url:    '/og-image.png',
+        width:  1200,
+        height: 630,
+        alt:    'Novara Quickbuy Social Preview',
+      },
+    ],
+    locale: 'en_US',
+    type:   'website',
+  },
+  twitter: {
+    card:        'summary_large_image',
+    title:       'Novara Quickbuy — Shop. Discover. Connect.',
+    description: 'Global social commerce marketplace. Discover products through video.',
+    images:      ['/og-image.png'],
+  },
   icons: {
     icon:  '/novara-icon.svg',
     apple: '/novara-icon.svg',
@@ -48,6 +71,7 @@ export default function RootLayout({ children }) {
         <Providers>
           {children}
         </Providers>
+        <UpdateCheck />
         <Toaster
           position="top-center"
           toastOptions={{
