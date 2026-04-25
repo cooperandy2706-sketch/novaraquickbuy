@@ -281,18 +281,55 @@ function FullscreenPlayer({ videos, startIndex, feedState, onClose, onLike, onSa
     return () => { document.body.style.overflow = '' }
   }, [])
 
+  // ── Scroll to Start Index ──
+  useEffect(() => {
+    if (containerRef.current && startIndex !== undefined) {
+      const target = containerRef.current.querySelector(`[data-index="${startIndex}"]`)
+      if (target) {
+        target.scrollIntoView({ behavior: 'auto' })
+      }
+    }
+  }, [startIndex])
+
+  // ── Track Active Video via IntersectionObserver ──
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(entry.target.getAttribute('data-index'), 10)
+            setActiveIdx(index)
+          }
+        })
+      },
+      { 
+        threshold: 0.6,
+        root: containerRef.current
+      }
+    )
+
+    const container = containerRef.current
+    if (container) {
+      const children = container.querySelectorAll('[data-index]')
+      children.forEach((child) => observer.observe(child))
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
   useEffect(() => {
     Object.entries(videoRefs.current).forEach(([idx, ref]) => {
       if (!ref) return
+      const currentVideo = videos[activeIdx]
       if (Number(idx) === activeIdx) {
         ref.play().catch(() => { })
-        if (video?.id) incrementView(video.id)
+        if (currentVideo?.id) incrementView(currentVideo.id)
       } else {
         ref.pause()
         ref.currentTime = 0
       }
     })
-  }, [activeIdx])
+  }, [activeIdx, videos])
 
   const handleDoubleTap = (e) => {
     const now = Date.now()
@@ -358,7 +395,7 @@ function FullscreenPlayer({ videos, startIndex, feedState, onClose, onLike, onSa
 
       <div className="flex-1 relative flex items-center justify-center bg-neutral-950 overflow-hidden">
         <div className="relative w-full h-full md:w-auto md:aspect-[9/16] bg-black md:rounded-[3.5rem] md:my-8 md:border-[10px] md:border-neutral-900 overflow-hidden md:shadow-[0_0_120px_rgba(0,0,0,1)] ring-1 ring-white/5">
-          <div ref={containerRef} className="w-full h-full overflow-y-scroll scrollbar-none" style={{ scrollSnapType: 'y mandatory' }}>
+          <div ref={containerRef} className="w-full h-full feed-container">
             {videos.map((v, idx) => {
               const vProduct = v.video_tags?.[0]?.product
               const vPrice = vProduct?.discount_price || vProduct?.price
