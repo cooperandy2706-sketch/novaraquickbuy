@@ -1,1 +1,0 @@
-export const detectMediaType = (url) => { if (!url) return null; const ext = url.split('.').pop().toLowerCase().split('?')[0]; if (['jpg','jpeg','png','webp','gif'].includes(ext)) return 'image'; if (['mp4','mov','webm'].includes(ext)) return 'video'; if (['mp3','ogg','wav','m4a'].includes(ext)) return 'voice'; return 'document' }

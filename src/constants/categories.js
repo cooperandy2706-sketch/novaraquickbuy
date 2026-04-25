@@ -1,1 +1,0 @@
-export const CATEGORIES = ['Fashion & Clothing','Shoes & Footwear','Electronics','Phones & Accessories','Beauty & Skincare','Health & Wellness','Home & Living','Food & Groceries','Sports & Fitness','Books & Education','Toys & Kids','Automotive','Art & Crafts','Jewelry & Watches','Other']
