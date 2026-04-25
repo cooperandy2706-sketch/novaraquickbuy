@@ -134,7 +134,7 @@ function VideoGridCard({ video, liked, saved, onOpen }) {
 
   return (
     <div
-      className="group relative rounded-[2.5rem] overflow-hidden cursor-pointer bg-neutral-950 transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:z-10 ring-1 ring-white/5"
+      className="group relative rounded-[2.5rem] overflow-hidden cursor-pointer bg-neutral-950 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.05] hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:z-10 ring-1 ring-white/5"
       style={{ aspectRatio: '9/16' }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -801,7 +801,15 @@ export default function VideoFeedPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-6">
-            {displayVideos.map(video => <VideoGridCard key={video.id} video={video} liked={liked[video.id]} saved={saved[video.id]} onOpen={setOpenVideo} />)}
+            {displayVideos.map((video, i) => (
+              <div 
+                key={video.id} 
+                className="animate-pop-in opacity-0" 
+                style={{ animationDelay: `${Math.min(i * 50, 600)}ms` }}
+              >
+                <VideoGridCard video={video} liked={liked[video.id]} saved={saved[video.id]} onOpen={setOpenVideo} />
+              </div>
+            ))}
           </div>
         )}
         <div ref={sentinelRef} className="h-20 flex items-center justify-center mt-12">{hasMore && <div className="flex gap-2"><div className="w-2 h-2 rounded-full bg-brand animate-bounce [animation-delay:-0.3s]" /><div className="w-2 h-2 rounded-full bg-brand animate-bounce [animation-delay:-0.15s]" /><div className="w-2 h-2 rounded-full bg-brand animate-bounce" /></div>}</div>

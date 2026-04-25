@@ -79,7 +79,7 @@ export default function CustomerHeader() {
           </div>
 
           {/* Wordmark */}
-          <div className="hidden sm:flex flex-col justify-center gap-[2px]">
+          <div className="flex flex-col justify-center gap-[2px]">
             <span
               className="font-extrabold text-primary text-[17px] leading-none"
               style={{ letterSpacing: '-0.03em' }}
