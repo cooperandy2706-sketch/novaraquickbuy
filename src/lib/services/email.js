@@ -1,7 +1,16 @@
 // FILE: src/lib/services/email.js
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY || process.env.NEXT_RESEND_API_KEY);
+let resendInstance = null;
+
+function getResend() {
+  const apiKey = process.env.RESEND_API_KEY || process.env.NEXT_RESEND_API_KEY;
+  if (!apiKey) return null;
+  if (!resendInstance) {
+    resendInstance = new Resend(apiKey);
+  }
+  return resendInstance;
+}
 const DEFAULT_FROM = process.env.RESEND_FROM_EMAIL || process.env.NEXT_RESEND_FROM_EMAIL || 'notifications@novaraquickbuy.com';
 
 /**
@@ -18,6 +27,12 @@ export const EmailService = {
     }
 
     try {
+      const resend = getResend();
+      if (!resend) {
+        console.error('Resend client could not be initialized (missing API key)');
+        return { error: 'Email service not configured' };
+      }
+
       const { data, error } = await resend.emails.send({
         from,
         to,

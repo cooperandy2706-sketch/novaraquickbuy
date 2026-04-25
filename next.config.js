@@ -12,9 +12,9 @@ const nextConfig = {
     formats:     ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
   },
+  reactCompiler: true,
   experimental: {
     optimizePackageImports: ['lucide-react', 'recharts', '@tanstack/react-query'],
-    reactCompiler: true,
   },
   async headers() {
     return [{
