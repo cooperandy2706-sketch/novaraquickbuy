@@ -1,0 +1,15 @@
+{
+  "name": "Novara Quickbuy",
+  "short_name": "Novara",
+  "start_url": "/feed",
+  "display": "standalone",
+  "background_color": "#F0FDF4",
+  "theme_color": "#16A54A",
+  "icons": [
+    {
+      "src": "/novara-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
