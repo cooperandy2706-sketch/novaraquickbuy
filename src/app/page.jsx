@@ -65,7 +65,7 @@ export default function RootPage() {
             <Link href="/feed" className="px-10 py-5 bg-brand text-white rounded-[2rem] font-black uppercase tracking-widest shadow-2xl shadow-brand/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
               Start Shopping <ArrowRight size={20} />
             </Link>
-            <Link href="/onboarding/vendor" className="px-10 py-5 bg-surface-2 text-primary border border-border rounded-[2rem] font-black uppercase tracking-widest hover:bg-surface-3 active:scale-95 transition-all">
+            <Link href="/register" className="px-10 py-5 bg-surface-2 text-primary border border-border rounded-[2rem] font-black uppercase tracking-widest hover:bg-surface-3 active:scale-95 transition-all">
               Become a Vendor
             </Link>
           </motion.div>
@@ -239,7 +239,7 @@ export default function RootPage() {
         <h2 className="text-4xl md:text-6xl font-black text-primary mb-8 leading-tight">Ready to Join the Revolution?</h2>
         <p className="text-xl text-secondary mb-12 max-w-2xl mx-auto font-medium">Start your journey today—whether you're looking to buy the best or sell your best.</p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-          <Link href="/onboarding/vendor" className="px-12 py-6 bg-brand text-white rounded-[2.5rem] font-black uppercase tracking-widest shadow-2xl shadow-brand/20 hover:scale-105 active:scale-95 transition-all">
+          <Link href="/register" className="px-12 py-6 bg-brand text-white rounded-[2.5rem] font-black uppercase tracking-widest shadow-2xl shadow-brand/20 hover:scale-105 active:scale-95 transition-all">
             Join as a Vendor
           </Link>
           <Link href="/feed" className="px-12 py-6 bg-surface-2 text-primary border border-border rounded-[2.5rem] font-black uppercase tracking-widest hover:bg-surface-3 active:scale-95 transition-all">
