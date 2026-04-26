@@ -51,15 +51,14 @@ export async function approveVerification(vendorId) {
   const { error } = await supabase
     .from('vendors')
     .update({ 
-      verification_status: 'approved',
+      verification_status: 'verified',
       updated_at: new Date().toISOString()
     })
     .eq('id', vendorId)
 
   if (error) return { error: error.message }
   
-  revalidatePath('/admin/verifications')
-  revalidatePath('/admin/dashboard')
+  revalidatePath('/', 'layout')
   return { success: true }
 }
 
@@ -78,7 +77,6 @@ export async function rejectVerification(vendorId) {
 
   if (error) return { error: error.message }
   
-  revalidatePath('/admin/verifications')
-  revalidatePath('/admin/dashboard')
+  revalidatePath('/', 'layout')
   return { success: true }
 }

@@ -5,6 +5,7 @@ export default function sitemap() {
     { url: 'https://novaraquickbuy.vercel.app',         lastModified: new Date(), changeFrequency: 'daily',   priority: 1 },
     { url: 'https://novaraquickbuy.vercel.app/explore', lastModified: new Date(), changeFrequency: 'daily',   priority: 0.9 },
     { url: 'https://novaraquickbuy.vercel.app/feed',    lastModified: new Date(), changeFrequency: 'hourly',  priority: 0.8 },
+    { url: 'https://novaraquickbuy.vercel.app/about',   lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     // TODO: dynamically add /product/[id] and /store/[vendorId] URLs from DB
   ]
 }

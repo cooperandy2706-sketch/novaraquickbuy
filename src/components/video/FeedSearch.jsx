@@ -2,6 +2,7 @@
 // FILE: src/components/video/FeedSearch.jsx
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter }    from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -42,6 +43,7 @@ export default function FeedSearch({ onSearch, className }) {
 
   const [query,       setQuery]       = useState('')
   const [focused,     setFocused]     = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
   const [suggestions, setSuggestions] = useState([])
   const [loading,     setLoading]     = useState(false)
   const [recent,      setRecent]      = useLocalStorage('novara-searches', [])
@@ -119,6 +121,7 @@ export default function FeedSearch({ onSearch, className }) {
     if (!query.trim()) return
     saveRecent(query.trim())
     setFocused(false)
+    setIsSearching(false)
     onSearch?.(query.trim())
     router.push(`/search?q=${encodeURIComponent(query.trim())}`)
   }
@@ -127,6 +130,7 @@ export default function FeedSearch({ onSearch, className }) {
     saveRecent(item.label)
     setQuery(item.label)
     setFocused(false)
+    setIsSearching(false)
     router.push(item.href)
   }
 
@@ -134,6 +138,7 @@ export default function FeedSearch({ onSearch, className }) {
     setQuery(term)
     saveRecent(term)
     setFocused(false)
+    setIsSearching(false)
     onSearch?.(term)
     router.push(`/search?q=${encodeURIComponent(term)}`)
   }
@@ -161,66 +166,192 @@ export default function FeedSearch({ onSearch, className }) {
 
   return (
     <div ref={containerRef} className={cn('relative w-full', className)}>
-
       {/* Input */}
       <form onSubmit={handleSubmit}>
-        <div className={cn(
-          'flex items-center gap-2.5 px-4 py-3 rounded-2xl transition-all duration-300',
-          'bg-surface-2 border-2',
-          focused
-            ? 'border-brand shadow-brand ring-4 ring-brand/10 bg-surface-1'
-            : 'border-border hover:border-brand/40',
-        )}>
-          <Search
-            size={18}
+        {!isSearching ? (
+          <motion.div 
+            layoutId="feed-search-bar"
             className={cn(
-              'shrink-0 transition-colors duration-200',
-              focused ? 'text-brand' : 'text-muted'
+              'flex items-center gap-2.5 px-4 py-3 rounded-2xl transition-all duration-300',
+              'bg-surface-2 border-2',
+              focused
+                ? 'border-brand shadow-brand bg-surface-1'
+                : 'border-border hover:border-brand/40',
             )}
-          />
+            onClick={() => setIsSearching(true)}
+          >
+            <Search
+              size={18}
+              className={cn(
+                'shrink-0 transition-colors duration-200',
+                focused ? 'text-brand' : 'text-muted'
+              )}
+            />
 
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            onFocus={() => setFocused(true)}
-            placeholder="Search products, vendors, categories..."
-            className="flex-1 bg-transparent text-sm outline-none text-primary placeholder:text-muted min-w-0"
-            autoComplete="off"
-          />
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              onFocus={() => setIsSearching(true)}
+              placeholder="Search products, vendors, categories..."
+              className="flex-1 bg-transparent text-sm outline-none text-primary placeholder:text-muted min-w-0 pointer-events-none lg:pointer-events-auto"
+              autoComplete="off"
+              readOnly={window.innerWidth < 1024}
+            />
 
-          <div className="flex items-center gap-1 shrink-0">
-            {query && (
+            <div className="flex items-center gap-1 shrink-0">
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => { setQuery(''); setSuggestions([]); inputRef.current?.focus() }}
+                  className="w-5 h-5 rounded-full bg-surface-3 flex items-center justify-center hover:bg-surface-2 transition-colors border border-border"
+                >
+                  <X size={11} className="text-muted" />
+                </button>
+              )}
+
               <button
                 type="button"
-                onClick={() => { setQuery(''); setSuggestions([]); inputRef.current?.focus() }}
-                className="w-5 h-5 rounded-full bg-surface-3 flex items-center justify-center hover:bg-surface-2 transition-colors border border-border"
+                onClick={handleVoice}
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-muted hover:text-brand hover:bg-brand/10 transition-all"
+                title="Voice search"
               >
-                <X size={11} className="text-muted" />
+                <Mic size={16} />
               </button>
-            )}
-
-            <button
-              type="button"
-              onClick={handleVoice}
-              className="w-8 h-8 rounded-xl flex items-center justify-center text-muted hover:text-brand hover:bg-brand/10 transition-all"
-              title="Voice search"
-            >
-              <Mic size={16} />
-            </button>
-
-            {query && (
-              <button
-                type="submit"
-                className="btn btn-primary btn-sm px-3 py-1.5 text-xs"
-              >
-                Search
-              </button>
-            )}
-          </div>
-        </div>
+            </div>
+          </motion.div>
+        ) : (
+          <div className="h-[52px]" /> // Placeholder
+        )}
       </form>
+
+      {/* Mobile Search Overlay */}
+      <AnimatePresence>
+        {isSearching && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[1000] bg-surface flex flex-col h-dvh overflow-hidden"
+          >
+            <div className="p-4 border-b border-neutral-100 bg-white flex items-center gap-3">
+              <motion.div 
+                layoutId="feed-search-bar"
+                className="flex-1 flex items-center gap-3 px-5 py-3.5 bg-white border border-brand/30 rounded-[2rem] shadow-md"
+              >
+                <Search size={18} className="text-brand shrink-0" />
+                <input
+                  autoFocus
+                  type="text"
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  placeholder="Search products, vendors..."
+                  className="flex-1 bg-transparent text-sm font-bold outline-none text-neutral-900"
+                />
+                {query && (
+                  <button onClick={() => setQuery('')} className="p-1">
+                    <X size={14} className="text-neutral-400" />
+                  </button>
+                )}
+              </motion.div>
+              <button 
+                onClick={() => { setIsSearching(false); setFocused(false) }}
+                className="text-sm font-black uppercase tracking-widest text-neutral-500 active:scale-95 transition-transform shrink-0 pr-2"
+              >
+                Cancel
+              </button>
+            </div>
+
+            <motion.div 
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.1, type: 'spring', damping: 25 }}
+              className="flex-1 overflow-y-auto bg-surface"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">
+                    {query.length >= 2 ? 'Matching Results' : 'Trending Guesses'}
+                  </h3>
+                  {loading ? (
+                    <div className="w-3 h-3 border-2 border-brand border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <TrendingUp size={12} className="text-neutral-300" />
+                  )}
+                </div>
+
+                <div className="grid gap-3">
+                  {query.length >= 2 ? (
+                    suggestions.length > 0 ? (
+                      suggestions.map((item, i) => (
+                        <motion.button
+                          key={`${item.type}-${item.id}`}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.05 }}
+                          onClick={() => { handleSelect(item); setIsSearching(false) }}
+                          className="flex items-center gap-4 p-3 bg-white rounded-2xl border border-neutral-100 shadow-sm active:scale-[0.98] transition-all group"
+                        >
+                          <div className="w-12 h-12 rounded-xl overflow-hidden bg-neutral-50 shrink-0 border border-neutral-100 flex items-center justify-center">
+                            {item.image ? (
+                              <img src={item.image} alt="" className="w-full h-full object-cover" />
+                            ) : item.type === 'product' ? (
+                              <Package size={20} className="text-brand" />
+                            ) : (
+                              <Store size={20} className="text-brand" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0 text-left">
+                            <p className="text-sm font-bold text-neutral-800 truncate">{item.label}</p>
+                            <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">
+                              {item.sub}
+                            </p>
+                          </div>
+                          <ArrowUpRight size={14} className="text-neutral-300 group-hover:text-brand transition-colors" />
+                        </motion.button>
+                      ))
+                    ) : !loading && (
+                      <div className="py-10 text-center">
+                        <p className="text-sm text-neutral-400">No matches found for "{query}"</p>
+                      </div>
+                    )
+                  ) : (
+                    <>
+                      {recent.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-3 px-1">Recent Searches</p>
+                          <div className="grid gap-2">
+                            {recent.slice(0, 3).map(r => (
+                              <button key={r} onClick={() => handleTrending(r)} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-neutral-100 text-sm font-bold text-neutral-600">
+                                <Clock size={14} /> {r}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      <div className="grid grid-cols-2 gap-2">
+                        {TRENDING.map((term, i) => (
+                          <motion.button
+                            key={term}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: i * 0.03 }}
+                            onClick={() => handleTrending(term)}
+                            className="p-3 bg-white rounded-xl border border-neutral-100 text-[10px] font-black uppercase tracking-wider text-neutral-600 hover:border-brand/30 transition-all text-center"
+                          >
+                            {term}
+                          </motion.button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Dropdown */}
       {showDropdown && (

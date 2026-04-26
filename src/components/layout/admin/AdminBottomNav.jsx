@@ -23,7 +23,7 @@ export default function AdminBottomNav() {
   const store    = useAdminStore()
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-overlay bg-neutral-950 border-t border-neutral-800 h-[var(--bottom-nav-h,60px)] safe-bottom">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-overlay bg-neutral-50/30 border-t border-neutral-200 h-[var(--bottom-nav-h,60px)] safe-bottom">
       <div className="flex h-full">
         {ITEMS.map(({ label, icon: Icon, href, badgeKey, danger }) => {
           const active = pathname === href || pathname.startsWith(href + '/')
@@ -33,14 +33,14 @@ export default function AdminBottomNav() {
             <Link key={href} href={href}
               className={cn(
                 'flex-1 flex flex-col items-center justify-center gap-0.5 relative transition-all',
-                active ? 'text-amber-400' : 'text-neutral-600 hover:text-neutral-400',
+                active ? 'text-amber-400' : 'text-neutral-600 hover:text-neutral-500',
               )}>
               {active && <span className="absolute top-0 inset-x-3 h-0.5 rounded-b-full bg-amber-500" />}
               <div className="relative">
                 <Icon size={20} strokeWidth={active ? 2.5 : 1.8} />
                 {count > 0 && (
                   <span className={cn(
-                    'absolute -top-1.5 -right-2 min-w-[16px] h-4 px-0.5 rounded-full border-2 border-neutral-950 flex items-center justify-center text-[8px] font-bold text-white',
+                    'absolute -top-1.5 -right-2 min-w-[16px] h-4 px-0.5 rounded-full border-2 border-neutral-950 flex items-center justify-center text-[8px] font-bold text-neutral-900',
                     danger ? 'bg-danger' : 'bg-amber-500',
                   )}>
                     {count > 9 ? '9+' : count}

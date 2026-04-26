@@ -7,7 +7,7 @@ import VerificationModal from './VerificationModal'
 
 const TABS = [
   { id: 'pending',  label: 'Pending',  icon: Clock,       color: 'text-amber-500',  bg: 'bg-amber-500/10' },
-  { id: 'approved', label: 'Approved', icon: BadgeCheck,  color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+  { id: 'verified', label: 'Approved', icon: BadgeCheck,  color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
   { id: 'rejected', label: 'Rejected', icon: XCircle,     color: 'text-danger',      bg: 'bg-danger/10' },
 ]
 
@@ -37,7 +37,7 @@ export default function VerificationsClient({ initialData }) {
 
   const counts = {
     pending:  data.filter(v => v.verification_status === 'pending').length,
-    approved: data.filter(v => v.verification_status === 'approved').length,
+    verified: data.filter(v => v.verification_status === 'verified').length,
     rejected: data.filter(v => v.verification_status === 'rejected').length,
   }
 

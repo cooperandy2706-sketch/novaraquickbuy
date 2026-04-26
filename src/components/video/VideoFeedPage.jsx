@@ -107,77 +107,56 @@ const ActionBtn = ({ icon, count, onClick, active, loading, activeColor }) => (
 )
 
 // ── Grid Card ──────────────────────────────────────────────────
-function VideoGridCard({ video, liked, saved, onOpen }) {
+function VideoGridCard({ video, liked, saved, onOpen, aspect = '9/16', isLarge = false }) {
   const videoRef = useRef(null)
-  const [hovering, setHovering] = useState(false)
   const [loaded, setLoaded] = useState(false)
 
   const product = video.video_tags?.[0]?.product
   const price = product?.discount_price || product?.price
   const isTrending = video.views > 1000
 
-  const handleMouseEnter = () => {
-    setHovering(true)
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0
-      videoRef.current.play().catch(() => { })
-    }
-  }
-
-  const handleMouseLeave = () => {
-    setHovering(false)
-    if (videoRef.current) {
-      videoRef.current.pause()
-      videoRef.current.currentTime = 0
-    }
-  }
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          videoRef.current?.play().catch(() => {})
+        } else {
+          videoRef.current?.pause()
+        }
+      },
+      { threshold: 0.1 }
+    )
+    if (videoRef.current) observer.observe(videoRef.current)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <div
-      className="group relative rounded-[2.5rem] overflow-hidden cursor-pointer bg-neutral-950 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.05] hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:z-10 ring-1 ring-white/5"
-      style={{ aspectRatio: '9/16' }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      className={cn(
+        "group relative rounded-[1.5rem] overflow-hidden cursor-pointer bg-neutral-950 transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.02] hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:z-10 ring-1 ring-white/5 w-full",
+        isLarge && "shadow-2xl"
+      )}
+      style={{ aspectRatio: aspect }}
       onClick={() => onOpen(video)}
     >
-      {video.thumbnail_url ? (
+      {video.thumbnail_url && !loaded && (
         <Image
           src={video.thumbnail_url}
           alt={video.title}
           fill
-          className={cn(
-            'object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1',
-            hovering ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
-          )}
+          className="object-cover"
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-        />
-      ) : (
-        <video
-          src={`${video.video_url}#t=0.1`}
-          className={cn(
-            "absolute inset-0 w-full h-full object-cover transition-opacity duration-500",
-            hovering ? 'opacity-0' : 'opacity-100'
-          )}
-          preload="metadata" muted playsInline
         />
       )}
       
-      {!video.thumbnail_url && !hovering && (
-        <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
-          <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-2xl">
-            <Play size={20} className="text-white ml-0.5" fill="currentColor" />
-          </div>
-        </div>
-      )}
-
       <video
         ref={videoRef}
         src={video.video_url}
-        muted loop playsInline preload="none"
+        muted loop playsInline autoPlay
         onLoadedData={() => setLoaded(true)}
         className={cn(
-          'absolute inset-0 w-full h-full object-cover transition-opacity duration-500',
-          hovering && loaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+          'absolute inset-0 w-full h-full object-cover transition-opacity duration-700',
+          loaded ? 'opacity-100' : 'opacity-0'
         )}
       />
 
@@ -223,14 +202,14 @@ function VideoGridCard({ video, liked, saved, onOpen }) {
         </div>
       )}
 
-      <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 z-10 transition-all duration-500 translate-y-1 group-hover:translate-y-0">
+      <div className={cn("absolute bottom-0 left-0 right-0 p-3 sm:p-4 z-10 transition-all duration-500 translate-y-1 group-hover:translate-y-0", isLarge && "sm:p-5")}>
         <div className="flex items-center gap-2 mb-2 bg-black/10 backdrop-blur-sm rounded-full pr-3 w-fit">
           <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand/20 border border-white/20 backdrop-blur-md overflow-hidden flex items-center justify-center text-[10px] font-black text-white shrink-0 shadow-lg group-hover:scale-110 transition-transform">
             {video.vendor?.logo_url ? <img src={video.vendor.logo_url} alt="" className="w-full h-full object-cover" /> : video.vendor?.store_name?.charAt(0)}
           </div>
-          <span className="text-white text-[10px] sm:text-xs font-black uppercase tracking-widest truncate drop-shadow-md max-w-[80px] sm:max-w-[120px]">{video.vendor?.store_name}</span>
+          <span className="text-white text-[9px] sm:text-[10px] font-black uppercase tracking-wider truncate drop-shadow-md max-w-[120px] sm:max-w-[160px]">{video.vendor?.store_name}</span>
         </div>
-        <p className="text-white/95 text-xs sm:text-sm font-bold leading-snug line-clamp-2 mb-3 drop-shadow-md group-hover:text-white transition-colors">{video.title}</p>
+        <p className={cn("text-white/95 font-bold leading-snug line-clamp-2 mb-3 drop-shadow-md group-hover:text-white transition-colors", isLarge ? "text-sm sm:text-lg" : "text-xs sm:text-sm")}>{video.title}</p>
         <div className="flex items-center justify-between gap-2 border-t border-white/10 pt-2.5 opacity-90 group-hover:opacity-100 transition-opacity">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1 text-white text-[9px] sm:text-[10px] font-black tracking-widest uppercase">
@@ -629,7 +608,7 @@ function CommentsSheet({ videoId, commentCount, onClose, hideCloseOnDesktop = fa
             value={content}
             onChange={e => setContent(e.target.value)}
             placeholder="Add a comment..."
-            className="w-full pl-8 pr-16 py-5 bg-neutral-50 rounded-[2rem] text-sm font-medium focus:outline-none focus:ring-4 focus:ring-brand/5 border border-neutral-100 focus:border-brand/20 transition-all placeholder:text-neutral-400 shadow-inner"
+            className="w-full pl-8 pr-16 py-5 bg-neutral-50 rounded-[2rem] text-sm font-medium focus:outline-none border border-neutral-100 focus:border-brand/20 transition-all placeholder:text-neutral-400 shadow-inner"
           />
           <button 
             type="submit" 
@@ -728,10 +707,10 @@ export default function VideoFeedPage() {
   )
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-neutral-50/30">
       {/* ── Scrollable Search Header ── */}
-      <div className="bg-white border-b border-neutral-50">
-        <div className="max-w-[1800px] mx-auto px-6 py-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      <div className="bg-white/70 backdrop-blur-3xl border-b border-neutral-200/50 relative z-[60]">
+        <div className="w-full mx-auto px-2 sm:px-4 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex-1 max-w-xl">
             <FeedSearch onSearch={() => { setCategory('all'); setSort('latest') }} />
           </div>
@@ -777,8 +756,8 @@ export default function VideoFeedPage() {
       </div>
 
       {/* ── Sticky Filters ── */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-neutral-100 shadow-sm transition-all duration-500">
-        <div className="max-w-[1800px] mx-auto">
+      <div className="sticky top-0 z-40 bg-white/70 backdrop-blur-3xl border-b border-neutral-200/50 shadow-sm transition-all duration-500">
+        <div className="w-full mx-auto px-2 sm:px-4">
           <FeedFilters
             category={category}
             onCategoryChange={setCategory}
@@ -792,7 +771,7 @@ export default function VideoFeedPage() {
         </div>
       </div>
 
-      <main className="max-w-[1800px] mx-auto p-6">
+      <main className="w-full mx-auto p-2 sm:p-4">
         {displayVideos.length === 0 && !loading ? (
           <div className="flex flex-col items-center justify-center py-40 animate-in zoom-in duration-500">
             <div className="w-24 h-24 rounded-[2.5rem] bg-neutral-50 flex items-center justify-center text-neutral-200 mb-6 border border-neutral-100 shadow-inner"><Play size={40} strokeWidth={1} /></div>
@@ -800,16 +779,27 @@ export default function VideoFeedPage() {
             <button onClick={() => { setCategory('all'); setSort('latest'); setOnlyVerified(false); setCountry('all') }} className="mt-8 px-10 py-4 bg-neutral-900 text-white rounded-3xl font-black uppercase tracking-widest active:scale-95 transition-all">Reset Feed</button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-6">
-            {displayVideos.map((video, i) => (
-              <div 
-                key={video.id} 
-                className="animate-pop-in opacity-0" 
-                style={{ animationDelay: `${Math.min(i * 50, 600)}ms` }}
-              >
-                <VideoGridCard video={video} liked={liked[video.id]} saved={saved[video.id]} onOpen={setOpenVideo} />
-              </div>
-            ))}
+          <div className="columns-2 sm:columns-2 lg:columns-3 xl:columns-4 gap-2 sm:gap-4 space-y-2 sm:space-y-4">
+            {displayVideos.map((video, i) => {
+              const pattern = i % 7;
+              let aspect = '9/16';
+              if (i === 0) aspect = '3/4'; 
+              else if (pattern === 2) aspect = '4/5';
+              else if (pattern === 4) aspect = '1/1';
+              else if (pattern === 6) aspect = '3/4';
+
+              const isLarge = aspect === '1/1' || aspect === '3/4';
+
+              return (
+                <div 
+                  key={video.id} 
+                  className="animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both hover:z-10 break-inside-avoid"
+                  style={{ animationDelay: `${Math.min(i * 50, 600)}ms` }}
+                >
+                  <VideoGridCard video={video} liked={liked[video.id]} saved={saved[video.id]} onOpen={() => setOpenVideo({ videos: displayVideos, index: i })} aspect={aspect} isLarge={isLarge} />
+                </div>
+              )
+            })}
           </div>
         )}
         <div ref={sentinelRef} className="h-20 flex items-center justify-center mt-12">{hasMore && <div className="flex gap-2"><div className="w-2 h-2 rounded-full bg-brand animate-bounce [animation-delay:-0.3s]" /><div className="w-2 h-2 rounded-full bg-brand animate-bounce [animation-delay:-0.15s]" /><div className="w-2 h-2 rounded-full bg-brand animate-bounce" /></div>}</div>

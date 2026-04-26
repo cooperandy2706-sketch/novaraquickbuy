@@ -2,7 +2,7 @@
 import VideoFeedPage from '@/components/video/VideoFeedPage'
 
 export const metadata = {
-  title: 'Novara Quickbuy — Discover Products',
+  title: 'Novara Quickbuy — Discover Trusted Vendors & Shop Global',
 }
 
 export default function FeedPage() {

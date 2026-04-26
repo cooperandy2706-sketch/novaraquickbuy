@@ -2,8 +2,8 @@
 import ExplorePage from '@/components/explore/ExplorePage'
 
 export const metadata = {
-  title:       'Explore — Novara Quickbuy',
-  description: 'Browse thousands of products from verified vendors across Ghana and Africa.',
+  title:       'Where to Buy from Trusted Vendors — Explore Novara Quickbuy',
+  description: 'The best marketplace to find where to buy products from verified and trusted vendors. Explore trending items and local favorites.',
 }
 
 export default function ExploreRoute() {

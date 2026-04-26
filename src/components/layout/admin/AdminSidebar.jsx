@@ -70,7 +70,7 @@ const NAV_GROUPS = [
 function Badge({ count, danger = false }) {
   if (!count || count <= 0) return null
   return (
-    <span className={`flex items-center justify-center rounded-full font-bold leading-none shrink-0 min-w-[20px] h-5 px-1.5 text-[10px] ${danger ? 'bg-danger text-white' : 'bg-amber-500 text-white'}`}>
+    <span className={`flex items-center justify-center rounded-full font-bold leading-none shrink-0 min-w-[20px] h-5 px-1.5 text-[10px] ${danger ? 'bg-danger text-white' : 'bg-amber-500 text-neutral-900'}`}>
       {count > 99 ? '99+' : count}
     </span>
   )
@@ -79,7 +79,7 @@ function Badge({ count, danger = false }) {
 function VitalsStrip() {
   const { activeOrders, revenueToday, newOrdersToday } = useAdminStore()
   return (
-    <div className="mx-2 mb-2 bg-neutral-900 rounded-xl p-3 border border-neutral-800">
+    <div className="mx-2 mb-2 bg-white shadow-sm rounded-xl p-3 border border-neutral-200">
       <p className="text-[9px] font-bold uppercase tracking-widest text-neutral-600 mb-2">Live</p>
       {[
         { icon: ShoppingBag, label: 'Active Orders',  val: activeOrders,                        color: 'text-amber-400'   },
@@ -114,26 +114,26 @@ export default function AdminSidebar() {
   return (
     <aside className={cn(
       'hidden md:flex flex-col fixed top-0 left-0 bottom-0 z-30',
-      'bg-neutral-950 border-r border-neutral-800',
+      'bg-neutral-50/30 border-r border-neutral-200',
       'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]',
       sidebarCollapsed ? 'w-16' : 'w-64',
     )}>
 
       {/* Logo */}
-      <div className="flex items-center justify-between px-4 h-14 border-b border-neutral-800 shrink-0">
+      <div className="flex items-center justify-between px-4 h-14 border-b border-neutral-200 shrink-0">
         {!sidebarCollapsed ? (
           <>
             <div className="flex items-center gap-2.5 overflow-hidden">
               <div className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center shrink-0">
-                <Shield size={16} className="text-white" />
+                <Shield size={16} className="text-neutral-900" />
               </div>
               <div className="min-w-0">
-                <p className="text-white font-bold text-sm leading-none">Novara</p>
+                <p className="text-neutral-900 font-bold text-sm leading-none">Novara</p>
                 <p className="text-neutral-500 text-[10px]">Admin Console</p>
               </div>
             </div>
             <button onClick={toggleSidebar}
-              className="shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-neutral-600 hover:text-white hover:bg-neutral-800 transition-all">
+              className="shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-800 transition-all">
               <ChevronLeft size={14} />
             </button>
           </>
@@ -141,16 +141,16 @@ export default function AdminSidebar() {
           <div className="flex flex-col items-center gap-1 w-full">
             <div className="relative">
               <div className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center mx-auto">
-                <Shield size={16} className="text-white" />
+                <Shield size={16} className="text-neutral-900" />
               </div>
               {totalUrgent > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-danger border-2 border-neutral-950 flex items-center justify-center text-[8px] font-bold text-white animate-pulse">
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-danger border-2 border-neutral-950 flex items-center justify-center text-[8px] font-bold text-neutral-900 animate-pulse">
                   {totalUrgent > 9 ? '9+' : totalUrgent}
                 </span>
               )}
             </div>
             <button onClick={toggleSidebar}
-              className="text-neutral-600 hover:text-white transition-colors mt-1">
+              className="text-neutral-600 hover:text-neutral-900 transition-colors mt-1">
               <ChevronRight size={12} />
             </button>
           </div>
@@ -178,7 +178,7 @@ export default function AdminSidebar() {
                       sidebarCollapsed && 'justify-center',
                       active
                         ? 'bg-amber-500/15 text-amber-400 border border-amber-500/25'
-                        : 'text-neutral-500 hover:bg-neutral-800/80 hover:text-white',
+                        : 'text-neutral-500 hover:bg-neutral-800/80 hover:text-neutral-900',
                     )}>
                     <Icon size={17} strokeWidth={active ? 2.5 : 1.8} className="shrink-0" />
                     {!sidebarCollapsed && (
@@ -189,7 +189,7 @@ export default function AdminSidebar() {
                     )}
                     {sidebarCollapsed && count > 0 && (
                       <span className={cn(
-                        'absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white',
+                        'absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-neutral-900',
                         danger ? 'bg-danger' : 'bg-amber-500',
                       )}>
                         {count > 9 ? '9+' : count}
@@ -197,7 +197,7 @@ export default function AdminSidebar() {
                     )}
                     {/* Collapsed tooltip */}
                     {sidebarCollapsed && (
-                      <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-neutral-800 text-white text-xs font-medium rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover/item:opacity-100 transition-opacity z-50 shadow-xl border border-neutral-700">
+                      <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-neutral-800 text-neutral-900 text-xs font-medium rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover/item:opacity-100 transition-opacity z-50 shadow-xl border border-neutral-300">
                         {label}{count > 0 && <span className={cn('ml-1.5 font-bold', danger ? 'text-red-400' : 'text-amber-400')}>({count})</span>}
                       </div>
                     )}
@@ -210,26 +210,26 @@ export default function AdminSidebar() {
       </nav>
 
       {/* Vitals + footer */}
-      <div className="shrink-0 border-t border-neutral-800">
+      <div className="shrink-0 border-t border-neutral-200">
         {!sidebarCollapsed && <VitalsStrip />}
         <div className="p-3">
           {!sidebarCollapsed ? (
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center text-neutral-900 font-bold text-sm shrink-0">
                 {initial}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-white text-sm font-semibold truncate">{profile?.full_name ?? 'Admin'}</p>
+                <p className="text-neutral-900 text-sm font-semibold truncate">{profile?.full_name ?? 'Admin'}</p>
                 <p className="text-neutral-600 text-xs truncate">{profile?.email}</p>
               </div>
               <button onClick={handleSignOut} title="Sign out"
-                className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-neutral-600 hover:text-white hover:bg-neutral-800 transition-all">
+                className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-800 transition-all">
                 <LogOut size={15} />
               </button>
             </div>
           ) : (
             <button onClick={handleSignOut} title="Sign out"
-              className="w-full flex justify-center text-neutral-600 hover:text-white transition-colors py-1">
+              className="w-full flex justify-center text-neutral-600 hover:text-neutral-900 transition-colors py-1">
               <LogOut size={18} />
             </button>
           )}

@@ -59,7 +59,7 @@ function UrgentDropdown({ onClose }) {
           <div className="flex flex-col items-center gap-2 py-8">
             <CheckCircle2 size={24} className="text-emerald-500" />
             <p className="text-sm font-bold text-brand-800">All clear!</p>
-            <p className="text-xs text-neutral-400">No urgent items right now</p>
+            <p className="text-xs text-neutral-500">No urgent items right now</p>
           </div>
         ) : (
           <div className="divide-y divide-neutral-100">
@@ -73,7 +73,7 @@ function UrgentDropdown({ onClose }) {
                   <p className="text-sm font-semibold text-brand-800">{item.label}</p>
                 </div>
                 <span className={cn('text-sm font-bold tabular-nums shrink-0', item.color)}>{item.count}</span>
-                <ChevronRight size={14} className="text-neutral-300 shrink-0" />
+                <ChevronRight size={14} className="text-neutral-700 shrink-0" />
               </Link>
             ))}
           </div>
@@ -103,17 +103,17 @@ export default function AdminHeader() {
   const initial = (profile?.full_name ?? profile?.email ?? 'A').charAt(0).toUpperCase()
 
   return (
-    <header className="sticky top-0 z-raised bg-neutral-950 border-b border-neutral-800 h-[var(--header-h,3.5rem)] flex items-center px-4 sm:px-6 gap-4 shrink-0">
+    <header className="sticky top-0 z-raised bg-neutral-50/30 border-b border-neutral-200 h-[var(--header-h,3.5rem)] flex items-center px-4 sm:px-6 gap-4 shrink-0">
 
       {/* Mobile hamburger */}
       <button onClick={openDrawer}
-        className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors">
+        className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl text-neutral-500 hover:text-neutral-900 hover:bg-neutral-800 transition-colors">
         <Menu size={20} />
       </button>
 
       {/* Page title */}
       <div className="flex-1 min-w-0">
-        <h1 className="font-bold text-white text-base truncate leading-none">{pageInfo.title}</h1>
+        <h1 className="font-bold text-neutral-900 text-base truncate leading-none">{pageInfo.title}</h1>
         <p className="text-xs text-neutral-600 mt-0.5 hidden sm:block truncate">{pageInfo.sub}</p>
       </div>
 
@@ -133,7 +133,7 @@ export default function AdminHeader() {
             'relative w-9 h-9 flex items-center justify-center rounded-xl transition-all',
             totalUrgent > 0
               ? 'text-danger bg-danger/10 hover:bg-danger/20'
-              : 'text-neutral-500 hover:bg-neutral-800 hover:text-white',
+              : 'text-neutral-500 hover:bg-neutral-800 hover:text-neutral-900',
           )}>
           <Bell size={19} />
           {totalUrgent > 0 && (
@@ -145,7 +145,7 @@ export default function AdminHeader() {
 
       {/* Avatar */}
       <Link href="/admin/settings"
-        className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center text-white font-bold text-sm hover:opacity-90 transition-opacity shrink-0">
+        className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center text-neutral-900 font-bold text-sm hover:opacity-90 transition-opacity shrink-0">
         {initial}
       </Link>
     </header>

@@ -24,7 +24,7 @@ export default async function AdminLayout({ children }) {
   if (!isAdmin) redirect('/feed')
 
   return (
-    <div className="min-h-dvh bg-neutral-950">
+    <div className="min-h-dvh bg-neutral-50/30">
       <AdminSidebar />
       <AdminMobileDrawer />
       <AdminLayoutShell>

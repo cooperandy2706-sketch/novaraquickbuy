@@ -9,7 +9,7 @@ import { useRouter }            from 'next/navigation'
 import {
   Search, BadgeCheck, X, Monitor,
   PanelTop, PanelBottom, Check,
-  Trash2, RefreshCw, ShieldAlert,
+  Trash2, RefreshCw, ShieldAlert, Sparkles
 } from 'lucide-react'
 import { cn }  from '@/utils/cn'
 import toast    from 'react-hot-toast'
@@ -26,6 +26,7 @@ export default function AdminHeroPage() {
   const router          = useRouter()
   const { profile }     = useAuthStore()
   const [heroProducts,  setHeroProducts]  = useState([])
+  const [premiumProducts, setPremiumProducts] = useState([])
   const [allProducts,   setAllProducts]   = useState([])
   const [search,        setSearch]        = useState('')
   const [searching,     setSearching]     = useState(false)
@@ -47,10 +48,23 @@ export default function AdminHeroPage() {
     setLoading(false)
   }
 
+  const loadPremiumUploads = async () => {
+    const { data } = await supabase
+      .from('products')
+      .select('id, name, price, discount_price, images, category, is_hero, hero_position, vendor:vendors!inner(id, store_name, verified, subscription_status)')
+      .eq('vendors.subscription_status', 'active')
+      .eq('is_hero', false)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(10)
+    setPremiumProducts(data ?? [])
+  }
+
   useEffect(() => {
     loadHero()
+    loadPremiumUploads()
     const channel = supabase.channel('admin-hero-sync')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'products' }, () => loadHero())
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'products' }, () => { loadHero(); loadPremiumUploads(); })
       .subscribe()
     return () => supabase.removeChannel(channel)
   }, [])
@@ -75,6 +89,7 @@ export default function AdminHeroPage() {
     else {
       toast.success(makeHero ? `Added to ${SLOTS.find(s => s.id === position)?.label}` : 'Removed from banner')
       await loadHero()
+      await loadPremiumUploads()
     }
     setSaving(null)
   }
@@ -182,7 +197,7 @@ export default function AdminHeroPage() {
               <div className={cn(
                 'flex items-center gap-2 border rounded-xl px-3.5 py-2.5 transition-all',
                 'bg-neutral-50 border-neutral-200',
-                'focus-within:bg-white focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/15'
+                'focus-within:bg-white focus-within:border-brand'
               )}>
                 <Search size={14} className="text-neutral-400 shrink-0" />
                 <input type="text" value={search} onChange={e => setSearch(e.target.value)}
@@ -198,7 +213,7 @@ export default function AdminHeroPage() {
             </div>
 
             <div className="divide-y divide-neutral-50 max-h-[520px] overflow-y-auto">
-              {!search && (
+              {!search && premiumProducts.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
                   <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center">
                     <Search size={22} className="text-brand" />
@@ -209,6 +224,50 @@ export default function AdminHeroPage() {
                       Type to search across all vendors' active products. Only you can add to banner slots.
                     </p>
                   </div>
+                </div>
+              )}
+
+              {!search && premiumProducts.length > 0 && (
+                <div className="bg-amber-50/30">
+                  <div className="px-5 py-3 border-b border-amber-100 flex items-center gap-2 bg-gradient-to-r from-amber-50 to-transparent">
+                    <Sparkles size={16} className="text-amber-500" />
+                    <p className="text-sm font-bold text-amber-800">Priority Uploads (Upgraded Vendors)</p>
+                  </div>
+                  {premiumProducts.map(product => {
+                    const price         = product.discount_price || product.price
+                    const isSaving      = saving === product.id
+                    const disabled      = isSaving || slotFull
+
+                    return (
+                      <div key={product.id} className="flex items-center gap-4 px-5 py-3.5 transition-all hover:bg-white/50 border-b border-amber-50 last:border-0">
+                        <div className="w-14 h-14 rounded-xl overflow-hidden bg-neutral-100 shrink-0">
+                          {product.images?.[0] ? <Image src={product.images[0]} alt={product.name} width={56} height={56} className="object-cover w-full h-full" /> : <div className="w-full h-full flex items-center justify-center text-2xl">🛍️</div>}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <p className="text-sm font-semibold text-neutral-900 truncate">{product.name}</p>
+                            {product.vendor?.verified && <BadgeCheck size={13} className="text-brand shrink-0" />}
+                          </div>
+                          <p className="text-xs text-neutral-400 mt-0.5 truncate">by {product.vendor?.store_name}</p>
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <span className="text-sm font-bold text-brand">{fmtGHS(price)}</span>
+                            {product.discount_price && <span className="text-xs text-neutral-400 line-through">{fmtGHS(product.price)}</span>}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => setHero(product.id, true, activeSlot)}
+                          disabled={disabled}
+                          className={cn(
+                            'flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 min-w-[80px] justify-center',
+                            disabled ? 'bg-neutral-100 text-neutral-400 cursor-not-allowed'
+                              : 'bg-amber-100 text-amber-700 hover:bg-amber-500 hover:text-white border border-amber-200 hover:border-amber-500'
+                          )}
+                        >
+                          {isSaving ? <RefreshCw size={12} className="animate-spin" /> : '+ Add'}
+                        </button>
+                      </div>
+                    )
+                  })}
                 </div>
               )}
 

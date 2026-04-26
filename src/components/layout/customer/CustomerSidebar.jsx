@@ -28,6 +28,7 @@ const NAV = [
   { label: 'Cart', icon: ShoppingCart, href: '/cart' },
   { label: 'Wishlist', icon: Heart, href: '/wishlist' },
   { label: 'Notifications', icon: Bell, href: '/notifications' },
+  { label: 'About', icon: BadgeCheck, href: '/about' },
   { label: 'Profile', icon: User, href: '/profile' },
 ]
 

@@ -2,6 +2,8 @@
 // FILE: src/components/explore/ExplorePage.jsx
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { createClient } from '@/lib/supabase/client'
 import Image  from 'next/image'
 import Link   from 'next/link'
 import {
@@ -9,7 +11,7 @@ import {
   Heart, Star, ShoppingCart,
   Search, SlidersHorizontal, X,
   TrendingUp, Zap, Package,
-  Flame, CheckCircle2, Plus,
+  Flame, CheckCircle2, Plus, ArrowUpRight,
 } from 'lucide-react'
 import { useExplore }      from '@/hooks/useExplore'
 import { useCart }         from '@/hooks/useCart'
@@ -56,6 +58,14 @@ const SORTS = [
   { id: 'price_asc',  label: 'Price ↑'   },
   { id: 'price_desc', label: 'Price ↓'   },
   { id: 'rating',     label: 'Top Rated' },
+]
+const SEARCH_GUESSES = [
+  { term: 'Ankara Prints', icon: '👗' },
+  { term: 'Nike Air Max',  icon: '👟' },
+  { term: 'Skin Care',      icon: '✨' },
+  { term: 'Smart Watches',  icon: '⌚' },
+  { term: 'Luxury Bags',    icon: '👜' },
+  { term: 'Home Decor',     icon: '🏠' },
 ]
 
 // ══════════════════════════════════════════════════════════════════════
@@ -317,6 +327,11 @@ export default function ExplorePage() {
   const [search,      setSearch]      = useState('')
   const [inStockOnly, setInStockOnly] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
+  const [liveSuggestions, setLiveSuggestions] = useState([])
+  const [isSearchingLive, setIsSearchingLive] = useState(false)
+  const supabase = createClient()
+
   const sentinelRef  = useRef(null)
   const searchTimer  = useRef(null)
 
@@ -353,6 +368,28 @@ export default function ExplorePage() {
     clearTimeout(searchTimer.current)
     searchTimer.current = setTimeout(() => applyFilters({ search: val }), 350)
   }
+
+  // Live suggestions effect
+  useEffect(() => {
+    if (!search.trim() || search.length < 2) {
+      setLiveSuggestions([])
+      return
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearchingLive(true)
+      const { data } = await supabase
+        .from('products')
+        .select('id, name, category, images, vendor:vendors(store_name, verified)')
+        .ilike('name', `%${search}%`)
+        .limit(6)
+      
+      setLiveSuggestions(data || [])
+      setIsSearchingLive(false)
+    }, 200)
+
+    return () => clearTimeout(timer)
+  }, [search, supabase])
 
   const handleCategory = (cat) => { setCategory(cat); applyFilters({ category: cat }) }
   const handleSort     = (s)   => { setSort(s);       applyFilters({ sort: s }) }
@@ -406,25 +443,146 @@ export default function ExplorePage() {
       </div>
 
       {/* ── SEARCH + FILTER BAR ────────────────────────────────── */}
-      <div className="relative z-20 bg-surface border-b border-neutral-100 transition-all duration-300">
+      <div className="relative z-[60] bg-surface border-b border-neutral-100 transition-all duration-300">
         <div className="page py-4">
           {/* Search row */}
-          <div className="flex items-center gap-3">
-            <div className="flex-1 flex items-center gap-3 px-5 py-3.5 bg-neutral-50/50 border border-neutral-100 rounded-[2rem] focus-within:bg-white focus-within:border-brand/30 focus-within:ring-4 focus-within:ring-brand/5 transition-all shadow-inner">
-              <Search size={18} className="text-neutral-400 shrink-0" />
-              <input
-                type="text"
-                value={search}
-                onChange={e => handleSearch(e.target.value)}
-                placeholder="Search products, vendors..."
-                className="flex-1 bg-transparent text-sm font-medium outline-none text-neutral-800 placeholder:text-neutral-400"
-              />
-              {search && (
-                <button onClick={() => { setSearch(''); applyFilters({ search: '' }) }} className="p-1 hover:bg-neutral-100 rounded-full transition-colors">
-                  <X size={14} className="text-neutral-400" />
-                </button>
+          <div className="flex items-center gap-3 min-h-[64px]">
+            {!isSearching ? (
+              <motion.div 
+                layoutId="search-bar"
+                className="flex-1 flex items-center gap-3 px-5 py-3.5 bg-neutral-50/50 border border-neutral-100 rounded-[2rem] focus-within:bg-white focus-within:border-brand/30 transition-all shadow-inner cursor-pointer sm:cursor-text"
+                onClick={() => setIsSearching(true)}
+              >
+                <Search size={18} className="text-neutral-400 shrink-0" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={e => handleSearch(e.target.value)}
+                  onFocus={() => setIsSearching(true)}
+                  placeholder="Search products, vendors..."
+                  className="flex-1 bg-transparent text-sm font-medium outline-none text-neutral-800 placeholder:text-neutral-400 pointer-events-none sm:pointer-events-auto"
+                  readOnly={window.innerWidth < 640}
+                />
+                {search && (
+                  <button onClick={(e) => { e.stopPropagation(); setSearch(''); applyFilters({ search: '' }) }} className="p-1 hover:bg-neutral-100 rounded-full transition-colors">
+                    <X size={14} className="text-neutral-400" />
+                  </button>
+                )}
+              </motion.div>
+            ) : (
+              <div className="flex-1" /> // Placeholder
+            )}
+
+            {/* Mobile Search Overlay */}
+            <AnimatePresence>
+              {isSearching && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-[1000] bg-surface flex flex-col"
+                >
+                  <div className="p-4 border-b border-neutral-100 bg-white flex items-center gap-3">
+                    <motion.div 
+                      layoutId="search-bar"
+                      className="flex-1 flex items-center gap-3 px-5 py-3.5 bg-white border border-brand/30 rounded-[2rem] shadow-md"
+                    >
+                      <Search size={18} className="text-brand shrink-0" />
+                      <input
+                        autoFocus
+                        type="text"
+                        value={search}
+                        onChange={e => handleSearch(e.target.value)}
+                        placeholder="Search products, vendors..."
+                        className="flex-1 bg-transparent text-sm font-bold outline-none text-neutral-900"
+                      />
+                      {search && (
+                        <button onClick={() => { setSearch(''); applyFilters({ search: '' }) }} className="p-1">
+                          <X size={14} className="text-neutral-400" />
+                        </button>
+                      )}
+                    </motion.div>
+                    <button 
+                      onClick={() => setIsSearching(false)}
+                      className="text-sm font-black uppercase tracking-widest text-neutral-500 active:scale-95 transition-transform shrink-0 pr-2"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+
+                  <motion.div 
+                    initial={{ y: 40, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.1, type: 'spring', damping: 25 }}
+                    className="flex-1 overflow-y-auto bg-surface"
+                  >
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">
+                          {search.length >= 2 ? 'Matching Results' : 'Trending Guesses'}
+                        </h3>
+                        {isSearchingLive ? (
+                          <div className="w-3 h-3 border-2 border-brand border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <TrendingUp size={12} className="text-neutral-300" />
+                        )}
+                      </div>
+
+                      <div className="grid gap-3">
+                        {search.length >= 2 ? (
+                          liveSuggestions.length > 0 ? (
+                            liveSuggestions.map((p, i) => (
+                              <motion.button
+                                key={p.id}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: i * 0.05 }}
+                                onClick={() => { handleSearch(p.name); setIsSearching(false) }}
+                                className="flex items-center gap-4 p-3 bg-white rounded-2xl border border-neutral-100 shadow-sm active:scale-[0.98] transition-all group"
+                              >
+                                <div className="w-12 h-12 rounded-xl overflow-hidden bg-neutral-50 shrink-0 border border-neutral-100">
+                                  {p.images?.[0] ? (
+                                    <img src={p.images[0]} alt="" className="w-full h-full object-cover" />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-lg">🛍️</div>
+                                  )}
+                                </div>
+                                <div className="flex-1 min-w-0 text-left">
+                                  <p className="text-sm font-bold text-neutral-800 truncate">{p.name}</p>
+                                  <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tight">
+                                    {p.vendor?.store_name} · {p.category}
+                                  </p>
+                                </div>
+                                <ArrowUpRight size={14} className="text-neutral-300 group-hover:text-brand transition-colors" />
+                              </motion.button>
+                            ))
+                          ) : !isSearchingLive && (
+                            <div className="py-10 text-center">
+                              <p className="text-sm text-neutral-400">No matches found for "{search}"</p>
+                            </div>
+                          )
+                        ) : (
+                          SEARCH_GUESSES.map((g, i) => (
+                            <motion.button
+                              key={g.term}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.1 + (i * 0.05) }}
+                              onClick={() => { handleSearch(g.term); setIsSearching(false) }}
+                              className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-neutral-100 shadow-sm active:scale-[0.98] transition-all group"
+                            >
+                              <span className="text-xl bg-neutral-50 w-10 h-10 rounded-xl flex items-center justify-center border border-neutral-100 group-hover:bg-brand/10 transition-colors">{g.icon}</span>
+                              <span className="flex-1 text-sm font-bold text-neutral-800">{g.term}</span>
+                              <Search size={14} className="text-neutral-300 group-hover:text-brand transition-colors" />
+                            </motion.button>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
               )}
-            </div>
+            </AnimatePresence>
 
             {/* Location Toggle (Mobile hidden, shown in expanded or side) */}
             <div className="hidden sm:flex items-center bg-neutral-100/50 p-1 rounded-2xl border border-neutral-100">

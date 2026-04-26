@@ -5,6 +5,7 @@ import { X, CheckCircle, XCircle, FileImage, User, Building, MapPin, Store } fro
 import { approveVerification, rejectVerification } from '@/lib/actions/adminVerifications'
 import toast from 'react-hot-toast'
 import { cn } from '@/utils/cn'
+import { useAdminStore } from '@/store/adminStore'
 
 function InfoRow({ icon: Icon, label, value }) {
   if (!value) return null
@@ -59,6 +60,7 @@ function DocumentViewer({ title, url }) {
 
 export default function VerificationModal({ vendor, onClose, onUpdate }) {
   const [loading, setLoading] = useState(false)
+  const decPending = useAdminStore(s => s.decPendingVerifications)
 
   const handleApprove = async () => {
     if (!confirm('Are you sure you want to approve this vendor?')) return
@@ -69,7 +71,8 @@ export default function VerificationModal({ vendor, onClose, onUpdate }) {
       setLoading(false)
     } else {
       toast.success('Vendor approved successfully')
-      onUpdate(vendor.id, 'approved')
+      if (vendor.verification_status === 'pending') decPending()
+      onUpdate(vendor.id, 'verified')
     }
   }
 
@@ -82,12 +85,13 @@ export default function VerificationModal({ vendor, onClose, onUpdate }) {
       setLoading(false)
     } else {
       toast.success('Vendor rejected')
+      if (vendor.verification_status === 'pending') decPending()
       onUpdate(vendor.id, 'rejected')
     }
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-fade-in">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-fade-in">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
       <div className="relative w-full max-w-5xl bg-surface rounded-2xl shadow-2xl flex flex-col max-h-[90dvh] animate-scale-in border border-border">
@@ -102,7 +106,7 @@ export default function VerificationModal({ vendor, onClose, onUpdate }) {
             <span className={cn(
               "px-3 py-1 text-xs font-bold uppercase rounded-full tracking-wider",
               vendor.verification_status === 'pending'  && "bg-amber-500/10 text-amber-500",
-              vendor.verification_status === 'approved' && "bg-emerald-500/10 text-emerald-500",
+              vendor.verification_status === 'verified' && "bg-emerald-500/10 text-emerald-500",
               vendor.verification_status === 'rejected' && "bg-danger/10 text-danger"
             )}>
               {vendor.verification_status}

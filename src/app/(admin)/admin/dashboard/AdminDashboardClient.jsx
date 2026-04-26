@@ -44,10 +44,10 @@ function timeAgo(date) {
 function KpiCard({ label, value, sub, subUp, icon: Icon, color, href, urgent, live }) {
   const inner = (
     <div className={cn(
-      'bg-neutral-900 border rounded-2xl p-5 transition-all group space-y-3',
+      'bg-white shadow-sm border rounded-2xl p-5 transition-all group space-y-3',
       urgent
         ? 'border-danger/30 hover:border-danger/50'
-        : 'border-neutral-800 hover:border-neutral-700',
+        : 'border-neutral-200 hover:border-neutral-300',
     )}>
       <div className="flex items-start justify-between">
         <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center shrink-0', color)}>
@@ -60,11 +60,11 @@ function KpiCard({ label, value, sub, subUp, icon: Icon, color, href, urgent, li
               <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
             </span>
           )}
-          {href && <ArrowUpRight size={14} className="text-neutral-700 group-hover:text-neutral-400 transition-colors" />}
+          {href && <ArrowUpRight size={14} className="text-neutral-700 group-hover:text-neutral-500 transition-colors" />}
         </div>
       </div>
       <div>
-        <p className="text-2xl font-bold text-white tabular-nums leading-tight">{value}</p>
+        <p className="text-2xl font-bold text-neutral-900 tabular-nums leading-tight">{value}</p>
         <p className="text-xs text-neutral-500 mt-0.5">{label}</p>
       </div>
       {sub && (
@@ -99,7 +99,7 @@ function GmvChart({ data, liveRevenue }) {
         const isToday = i === adjusted.length - 1
         return (
           <div key={d.date ?? i} className="flex-1 flex flex-col items-center gap-1.5 group relative">
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-neutral-700 border border-neutral-600 text-white text-[10px] font-bold px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 shadow-lg">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-neutral-700 border border-neutral-600 text-neutral-900 text-[10px] font-bold px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 shadow-lg">
               {fmtMoney(d.total)}
             </div>
             <div
@@ -132,7 +132,7 @@ function HourlyChart({ data }) {
         const isNow   = i === slice.length - 1
         return (
           <div key={i} className="flex-1 relative group">
-            <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-neutral-700 text-white text-[9px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+            <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-neutral-700 text-neutral-900 text-[9px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
               {d.orders} orders
             </div>
             <div
@@ -156,7 +156,7 @@ function GrowthChart({ data }) {
     <div className="flex items-end gap-2 h-16">
       {data.map((d, i) => (
         <div key={d.label} className="flex-1 flex items-end gap-0.5 group relative">
-          <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-neutral-700 text-white text-[9px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+          <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-neutral-700 text-neutral-900 text-[9px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
             +{d.vendors} vendors · +{d.users} users
           </div>
           <div className="flex-1 rounded-t-sm bg-amber-500/70 transition-all" style={{ height: `${Math.max(3, (d.vendors / max) * 100)}%` }} />
@@ -173,10 +173,10 @@ function CountryRow({ country, revenue, max }) {
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between text-xs">
-        <span className="text-neutral-300 font-medium flex items-center gap-1.5">
+        <span className="text-neutral-700 font-medium flex items-center gap-1.5">
           <MapPin size={10} className="text-neutral-600 shrink-0" />{country}
         </span>
-        <span className="text-white font-bold tabular-nums">{fmtMoney(revenue)}</span>
+        <span className="text-neutral-900 font-bold tabular-nums">{fmtMoney(revenue)}</span>
       </div>
       <div className="w-full bg-neutral-800 rounded-full h-1.5 overflow-hidden">
         <div className="h-full bg-amber-500 rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
@@ -192,14 +192,14 @@ function StatusBadge({ status }) {
     approved:        'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
     active:          'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
     disputed:        'bg-danger/10 text-danger border-danger/20',
-    cancelled:       'bg-neutral-700/40 text-neutral-500 border-neutral-700',
+    cancelled:       'bg-neutral-700/40 text-neutral-500 border-neutral-300',
     delivered:       'bg-blue-500/10 text-blue-400 border-blue-500/20',
     completed:       'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
     preparing:       'bg-violet-500/10 text-violet-400 border-violet-500/20',
     vendor_accepted: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
     verified:        'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-    unverified:      'bg-neutral-700/40 text-neutral-500 border-neutral-700',
-  }[status] ?? 'bg-neutral-800 text-neutral-400 border-neutral-700'
+    unverified:      'bg-neutral-700/40 text-neutral-500 border-neutral-300',
+  }[status] ?? 'bg-neutral-800 text-neutral-500 border-neutral-300'
 
   return (
     <span className={cn('inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border capitalize', cfg)}>
@@ -215,7 +215,7 @@ function SectionHeader({ title, sub, icon: Icon, href, action }) {
       <div>
         <div className="flex items-center gap-2">
           <Icon size={14} className="text-amber-500" />
-          <h3 className="text-sm font-bold text-white">{title}</h3>
+          <h3 className="text-sm font-bold text-neutral-900">{title}</h3>
         </div>
         {sub && <p className="text-[10px] text-neutral-600 mt-0.5 ml-5">{sub}</p>}
       </div>
@@ -279,7 +279,7 @@ export default function AdminDashboardClient({
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h2 className="text-xl font-bold text-white">Platform Overview</h2>
+          <h2 className="text-xl font-bold text-neutral-900">Platform Overview</h2>
           <p className="text-sm text-neutral-500 mt-0.5">
             {new Date().toLocaleDateString('en', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
           </p>
@@ -294,7 +294,7 @@ export default function AdminDashboardClient({
             Live updates active
           </div>
           <button onClick={handleRefresh}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-neutral-800 border border-neutral-700 text-neutral-300 hover:text-white text-xs font-semibold transition-all">
+            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-neutral-800 border border-neutral-300 text-neutral-700 hover:text-neutral-900 text-xs font-semibold transition-all">
             <RefreshCw size={12} className={refreshing ? 'animate-spin' : ''} />
             Refresh
           </button>
@@ -327,7 +327,7 @@ export default function AdminDashboardClient({
       </div>
 
       {/* ── Tab switcher ────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-0.5 bg-neutral-900 border border-neutral-800 rounded-xl p-1 w-fit">
+      <div className="flex items-center gap-0.5 bg-white shadow-sm border border-neutral-200 rounded-xl p-1 w-fit">
         {[
           { id: 'overview',  label: 'Overview'  },
           { id: 'revenue',   label: 'Revenue'   },
@@ -338,8 +338,8 @@ export default function AdminDashboardClient({
             className={cn(
               'px-4 py-1.5 rounded-lg text-xs font-semibold transition-all',
               tab === t.id
-                ? 'bg-amber-500 text-white shadow-sm'
-                : 'text-neutral-500 hover:text-neutral-300',
+                ? 'bg-amber-500 text-neutral-900 shadow-sm'
+                : 'text-neutral-500 hover:text-neutral-700',
             )}>
             {t.label}
           </button>
@@ -396,7 +396,7 @@ export default function AdminDashboardClient({
               sub={`+${vendors.new30d} this month`}
               subUp={vendors.new30d > 0}
               icon={Globe}
-              color="bg-neutral-700/60 text-neutral-300"
+              color="bg-neutral-700/60 text-neutral-700"
               href="/admin/vendors"
             />
             <KpiCard
@@ -433,11 +433,11 @@ export default function AdminDashboardClient({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
             {/* GMV 7-day */}
-            <div className="lg:col-span-2 bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-4">
+            <div className="lg:col-span-2 bg-white shadow-sm border border-neutral-200 rounded-2xl p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <BarChart3 size={14} className="text-amber-500" />
-                  <h3 className="text-sm font-bold text-white">7-Day GMV</h3>
+                  <h3 className="text-sm font-bold text-neutral-900">7-Day GMV</h3>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-neutral-500">
                   <span>Total: {fmtMoney(revenue.gmv30d)}</span>
@@ -448,7 +448,7 @@ export default function AdminDashboardClient({
             </div>
 
             {/* Platform health */}
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-3">
+            <div className="bg-white shadow-sm border border-neutral-200 rounded-2xl p-5 space-y-3">
               <SectionHeader title="Platform Health" icon={Activity} />
               {[
                 { label: 'Vendor activation',  val: vendors.active,   total: vendors.total,              color: 'bg-emerald-500' },
@@ -460,8 +460,8 @@ export default function AdminDashboardClient({
                 return (
                   <div key={r.label} className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-neutral-400">{r.label}</span>
-                      <span className="text-white font-bold tabular-nums">{fmtNum(r.val)}</span>
+                      <span className="text-neutral-500">{r.label}</span>
+                      <span className="text-neutral-900 font-bold tabular-nums">{fmtNum(r.val)}</span>
                     </div>
                     <div className="w-full bg-neutral-800 rounded-full h-1.5 overflow-hidden">
                       <div className={cn('h-full rounded-full transition-all duration-700', r.color)}
@@ -477,7 +477,7 @@ export default function AdminDashboardClient({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
             {/* Recent vendors */}
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5">
+            <div className="bg-white shadow-sm border border-neutral-200 rounded-2xl p-5">
               <SectionHeader title="New Vendors" icon={Globe} href="/admin/vendors" />
               {recentVendors.length === 0 ? (
                 <p className="text-xs text-neutral-600 text-center py-8">No recent vendors</p>
@@ -486,7 +486,7 @@ export default function AdminDashboardClient({
                   {recentVendors.map(v => (
                     <Link key={v.id} href={`/admin/vendors/${v.id}`}
                       className="flex items-center gap-3 group">
-                      <div className="w-9 h-9 rounded-xl bg-neutral-800 overflow-hidden border border-neutral-700 shrink-0">
+                      <div className="w-9 h-9 rounded-xl bg-neutral-800 overflow-hidden border border-neutral-300 shrink-0">
                         {v.store_logo_url
                           ? <img src={v.store_logo_url} alt={v.store_name} className="w-full h-full object-cover" />
                           : <div className="w-full h-full flex items-center justify-center text-neutral-500 text-xs font-bold">
@@ -495,7 +495,7 @@ export default function AdminDashboardClient({
                         }
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-white truncate group-hover:text-amber-300 transition-colors">
+                        <p className="text-sm font-semibold text-neutral-900 truncate group-hover:text-amber-300 transition-colors">
                           {v.store_name}
                         </p>
                         <p className="text-[10px] text-neutral-500">{v.business_country} · {timeAgo(v.created_at)}</p>
@@ -508,7 +508,7 @@ export default function AdminDashboardClient({
             </div>
 
             {/* Recent orders */}
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5">
+            <div className="bg-white shadow-sm border border-neutral-200 rounded-2xl p-5">
               <SectionHeader title="Recent Orders" icon={ShoppingBag} href="/admin/orders" />
               {recentOrders.length === 0 ? (
                 <p className="text-xs text-neutral-600 text-center py-8">No recent orders</p>
@@ -521,18 +521,18 @@ export default function AdminDashboardClient({
                         'w-9 h-9 rounded-xl border flex items-center justify-center shrink-0',
                         o.status === 'disputed'
                           ? 'bg-danger/10 border-danger/20'
-                          : 'bg-neutral-800 border-neutral-700',
+                          : 'bg-neutral-800 border-neutral-300',
                       )}>
                         <ShoppingBag size={14} className={o.status === 'disputed' ? 'text-danger' : 'text-neutral-500'} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-mono font-semibold text-neutral-300 group-hover:text-white transition-colors">
+                        <p className="text-xs font-mono font-semibold text-neutral-700 group-hover:text-neutral-900 transition-colors">
                           #{o.id.slice(0, 8).toUpperCase()}
                         </p>
                         <p className="text-[10px] text-neutral-500 truncate">{o.vendor?.store_name} · {timeAgo(o.created_at)}</p>
                       </div>
                       <div className="flex flex-col items-end gap-1 shrink-0">
-                        <span className="text-xs font-bold text-white">${o.total_amount?.toFixed(0)}</span>
+                        <span className="text-xs font-bold text-neutral-900">${o.total_amount?.toFixed(0)}</span>
                         <StatusBadge status={o.status} />
                       </div>
                     </Link>
@@ -542,7 +542,7 @@ export default function AdminDashboardClient({
             </div>
 
             {/* Recent sub payments */}
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5">
+            <div className="bg-white shadow-sm border border-neutral-200 rounded-2xl p-5">
               <SectionHeader title="Subscription Payments" icon={Crown} href="/admin/subscriptions" />
               {recentPayments.length === 0 ? (
                 <p className="text-xs text-neutral-600 text-center py-8">No recent payments</p>
@@ -563,7 +563,7 @@ export default function AdminDashboardClient({
                         }
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-white truncate group-hover:text-amber-300 transition-colors">
+                        <p className="text-xs font-semibold text-neutral-900 truncate group-hover:text-amber-300 transition-colors">
                           {p.vendor?.store_name}
                         </p>
                         <p className="text-[10px] text-neutral-500">
@@ -571,7 +571,7 @@ export default function AdminDashboardClient({
                         </p>
                       </div>
                       <div className="shrink-0 text-right space-y-0.5">
-                        <p className="text-xs font-bold text-white">{p.currency} {p.amount?.toFixed(0)}</p>
+                        <p className="text-xs font-bold text-neutral-900">{p.currency} {p.amount?.toFixed(0)}</p>
                         <StatusBadge status={p.status} />
                       </div>
                     </Link>
@@ -583,7 +583,7 @@ export default function AdminDashboardClient({
 
           {/* Quick actions */}
           <div>
-            <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-neutral-900 mb-4 flex items-center gap-2">
               <Zap size={14} className="text-amber-500" /> Quick Actions
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -597,12 +597,12 @@ export default function AdminDashboardClient({
                   className={cn(
                     'flex flex-col gap-3 p-4 rounded-2xl border transition-all hover:scale-[1.02] active:scale-[0.98] group',
                     a.urgent
-                      ? 'bg-neutral-900 border-neutral-700 hover:border-amber-500/30'
-                      : 'bg-neutral-900 border-neutral-800 hover:border-neutral-700',
+                      ? 'bg-white shadow-sm border-neutral-300 hover:border-amber-500/30'
+                      : 'bg-white shadow-sm border-neutral-200 hover:border-neutral-300',
                   )}>
                   <a.Icon size={20} className={cn(a.color, 'transition-transform group-hover:scale-110')} />
                   <div>
-                    <p className="text-sm font-bold text-white">{a.label}</p>
+                    <p className="text-sm font-bold text-neutral-900">{a.label}</p>
                     <p className={cn('text-xs mt-0.5', a.urgent ? 'text-amber-400 font-semibold' : 'text-neutral-500')}>
                       {a.sub}
                     </p>
@@ -618,14 +618,14 @@ export default function AdminDashboardClient({
       {tab === 'revenue' && (
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5">
+            <div className="bg-white shadow-sm border border-neutral-200 rounded-2xl p-5">
               <p className="text-xs text-neutral-500 mb-1">GMV Last 30 Days</p>
-              <p className="text-3xl font-bold text-white tabular-nums">{fmtMoney(revenue.gmv30d)}</p>
+              <p className="text-3xl font-bold text-neutral-900 tabular-nums">{fmtMoney(revenue.gmv30d)}</p>
               <p className="text-xs text-emerald-400 mt-1 font-semibold">Gross merchandise value</p>
             </div>
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5">
+            <div className="bg-white shadow-sm border border-neutral-200 rounded-2xl p-5">
               <p className="text-xs text-neutral-500 mb-1">Subscription Revenue 30d</p>
-              <p className="text-3xl font-bold text-white tabular-nums">{fmtMoney(revenue.subRev30d)}</p>
+              <p className="text-3xl font-bold text-neutral-900 tabular-nums">{fmtMoney(revenue.subRev30d)}</p>
               {subStats && (
                 <div className="flex items-center gap-3 mt-2">
                   <span className="text-[10px] text-amber-400 font-semibold">{subStats.monthlyCount} monthly</span>
@@ -633,16 +633,16 @@ export default function AdminDashboardClient({
                 </div>
               )}
             </div>
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5">
+            <div className="bg-white shadow-sm border border-neutral-200 rounded-2xl p-5">
               <p className="text-xs text-neutral-500 mb-1">Escrow Held</p>
-              <p className="text-3xl font-bold text-white tabular-nums">{fmtMoney(revenue.escrowTotal)}</p>
+              <p className="text-3xl font-bold text-neutral-900 tabular-nums">{fmtMoney(revenue.escrowTotal)}</p>
               <p className="text-xs text-blue-400 mt-1 font-semibold">Pending release</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {/* Revenue by country */}
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-4">
+            <div className="bg-white shadow-sm border border-neutral-200 rounded-2xl p-5 space-y-4">
               <SectionHeader title="Revenue by Country" sub="Last 30 days" icon={MapPin} />
               {byCountry.length === 0 ? (
                 <p className="text-xs text-neutral-600 text-center py-6">No data yet</p>
@@ -657,7 +657,7 @@ export default function AdminDashboardClient({
 
             {/* Subscription breakdown */}
             {subStats && (
-              <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-4">
+              <div className="bg-white shadow-sm border border-neutral-200 rounded-2xl p-5 space-y-4">
                 <SectionHeader title="Subscription Breakdown" icon={Crown} href="/admin/subscriptions" />
                 <div className="space-y-4">
                   {[
@@ -666,7 +666,7 @@ export default function AdminDashboardClient({
                   ].map(s => (
                     <div key={s.label} className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-neutral-300 font-medium">{s.label}</span>
+                        <span className="text-neutral-700 font-medium">{s.label}</span>
                         <div className="flex items-center gap-2">
                           <span className="text-[10px] text-neutral-500">{s.count} payments</span>
                           <span className={cn('font-bold tabular-nums', s.text)}>{fmtMoney(s.val)}</span>
@@ -683,11 +683,11 @@ export default function AdminDashboardClient({
                     'flex items-center justify-between px-4 py-3 rounded-xl border mt-2',
                     subStats.expiringIn7d > 0
                       ? 'bg-amber-500/10 border-amber-500/20'
-                      : 'bg-neutral-800/50 border-neutral-700',
+                      : 'bg-neutral-800/50 border-neutral-300',
                   )}>
                     <div className="flex items-center gap-2">
                       <Clock size={14} className={subStats.expiringIn7d > 0 ? 'text-amber-400' : 'text-neutral-500'} />
-                      <span className="text-xs font-semibold text-neutral-300">Expiring in 7 days</span>
+                      <span className="text-xs font-semibold text-neutral-700">Expiring in 7 days</span>
                     </div>
                     <span className={cn(
                       'text-sm font-bold tabular-nums',
@@ -708,12 +708,12 @@ export default function AdminDashboardClient({
         <div className="space-y-5">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: 'Total Vendors',    val: vendors.total,              color: 'text-neutral-300', bg: 'bg-neutral-800'           },
+              { label: 'Total Vendors',    val: vendors.total,              color: 'text-neutral-700', bg: 'bg-neutral-800'           },
               { label: 'Active Stores',    val: vendors.active,             color: 'text-emerald-400', bg: 'bg-emerald-500/10'        },
               { label: 'New This Month',   val: vendors.new30d,             color: 'text-amber-400',   bg: 'bg-amber-500/10'          },
               { label: 'Pending Verif.',   val: vendors.pendingVerification, color: vendors.pendingVerification > 0 ? 'text-danger' : 'text-neutral-500', bg: vendors.pendingVerification > 0 ? 'bg-danger/10' : 'bg-neutral-800' },
             ].map(s => (
-              <div key={s.label} className={cn('rounded-2xl border border-neutral-800 p-5 space-y-1', s.bg)}>
+              <div key={s.label} className={cn('rounded-2xl border border-neutral-200 p-5 space-y-1', s.bg)}>
                 <p className="text-2xl font-bold tabular-nums" style={{ color: 'white' }}>{fmtNum(s.val)}</p>
                 <p className={cn('text-xs font-semibold', s.color)}>{s.label}</p>
               </div>
@@ -721,11 +721,11 @@ export default function AdminDashboardClient({
           </div>
 
           {/* Top vendors table */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-neutral-800 flex items-center justify-between">
+          <div className="bg-white shadow-sm border border-neutral-200 rounded-2xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-neutral-200 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Star size={14} className="text-amber-500" />
-                <h3 className="text-sm font-bold text-white">Top Vendors by Revenue</h3>
+                <h3 className="text-sm font-bold text-neutral-900">Top Vendors by Revenue</h3>
               </div>
               <Link href="/admin/vendors"
                 className="text-xs font-semibold text-neutral-500 hover:text-amber-400 transition-colors flex items-center gap-1">
@@ -741,7 +741,7 @@ export default function AdminDashboardClient({
                   <Link key={v.vendor?.id ?? i} href={`/admin/vendors/${v.vendor?.id}`}
                     className="flex items-center gap-4 px-5 py-3.5 hover:bg-neutral-800/50 transition-colors group">
                     <span className="text-sm font-bold text-neutral-600 w-5 tabular-nums shrink-0">{i + 1}</span>
-                    <div className="w-9 h-9 rounded-xl bg-neutral-800 overflow-hidden border border-neutral-700 shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-neutral-800 overflow-hidden border border-neutral-300 shrink-0">
                       {v.vendor?.store_logo_url
                         ? <img src={v.vendor.store_logo_url} alt="" className="w-full h-full object-cover" />
                         : <div className="w-full h-full flex items-center justify-center text-neutral-500 text-xs font-bold">
@@ -750,7 +750,7 @@ export default function AdminDashboardClient({
                       }
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-white truncate group-hover:text-amber-300 transition-colors">
+                      <p className="text-sm font-semibold text-neutral-900 truncate group-hover:text-amber-300 transition-colors">
                         {v.vendor?.store_name}
                       </p>
                       <p className="text-[10px] text-neutral-500">{v.vendor?.business_country} · {v.orders} orders</p>
@@ -775,14 +775,14 @@ export default function AdminDashboardClient({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
             {/* 8-week growth chart */}
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-4">
+            <div className="bg-white shadow-sm border border-neutral-200 rounded-2xl p-5 space-y-4">
               <SectionHeader title="8-Week Platform Growth" sub="New vendors vs new buyers" icon={TrendingUp} />
               <GrowthChart data={growth} />
               <div className="flex items-center gap-4 text-xs">
-                <span className="flex items-center gap-1.5 text-neutral-400">
+                <span className="flex items-center gap-1.5 text-neutral-500">
                   <span className="w-3 h-3 rounded-sm bg-amber-500/70 inline-block" /> Vendors
                 </span>
-                <span className="flex items-center gap-1.5 text-neutral-400">
+                <span className="flex items-center gap-1.5 text-neutral-500">
                   <span className="w-3 h-3 rounded-sm bg-blue-500/70 inline-block" /> Buyers
                 </span>
               </div>
@@ -790,7 +790,7 @@ export default function AdminDashboardClient({
                 {growth.slice(-2).map((w, i) => (
                   <div key={w.label} className="bg-neutral-800 rounded-xl p-3">
                     <p className="text-[10px] text-neutral-500">{i === 0 ? 'Last week' : 'This week'}</p>
-                    <p className="text-sm font-bold text-white mt-0.5">+{w.vendors} vendors</p>
+                    <p className="text-sm font-bold text-neutral-900 mt-0.5">+{w.vendors} vendors</p>
                     <p className="text-xs text-blue-400">+{w.users} buyers</p>
                   </div>
                 ))}
@@ -798,7 +798,7 @@ export default function AdminDashboardClient({
             </div>
 
             {/* Hourly order trend */}
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-4">
+            <div className="bg-white shadow-sm border border-neutral-200 rounded-2xl p-5 space-y-4">
               <SectionHeader
                 title="Orders Last 12 Hours"
                 sub="Hourly distribution"
@@ -832,7 +832,7 @@ export default function AdminDashboardClient({
           </div>
 
           {/* Content stats */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5">
+          <div className="bg-white shadow-sm border border-neutral-200 rounded-2xl p-5">
             <SectionHeader title="Content Overview" icon={Eye} />
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
@@ -841,10 +841,10 @@ export default function AdminDashboardClient({
                 { label: 'Active Subs',         val: subs.active,      icon: Crown,   color: 'text-amber-400',   bg: 'bg-amber-500/10'  },
                 { label: 'Total Orders',        val: orders.total,     icon: ShoppingBag, color: 'text-emerald-400', bg: 'bg-emerald-500/10'},
               ].map(s => (
-                <div key={s.label} className={cn('rounded-xl p-4 border border-neutral-800 flex items-center gap-3', s.bg)}>
+                <div key={s.label} className={cn('rounded-xl p-4 border border-neutral-200 flex items-center gap-3', s.bg)}>
                   <s.icon size={20} className={cn(s.color, 'shrink-0')} strokeWidth={1.8} />
                   <div>
-                    <p className="text-xl font-bold text-white tabular-nums">{fmtNum(s.val)}</p>
+                    <p className="text-xl font-bold text-neutral-900 tabular-nums">{fmtNum(s.val)}</p>
                     <p className="text-[10px] text-neutral-500 mt-0.5">{s.label}</p>
                   </div>
                 </div>

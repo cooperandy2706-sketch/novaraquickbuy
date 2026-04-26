@@ -4,6 +4,7 @@ import { Plus_Jakarta_Sans, Noto_Sans_Arabic } from 'next/font/google'
 import { Toaster }    from 'react-hot-toast'
 import Providers      from '@/components/Providers'
 import UpdateCheck    from '@/components/global/UpdateCheck'
+import StructuredData from '@/components/global/StructuredData'
 import '@/app/globals.css'
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -23,13 +24,13 @@ const notoArabic = Noto_Sans_Arabic({
 export const metadata = {
   metadataBase: new URL('https://novaraquickbuy.vercel.app'),
   title: {
-    default:  'Novara Quickbuy — Shop. Discover. Connect.',
+    default:  'Novara Quickbuy — Where to Sell & Buy from Trusted Vendors',
     template: '%s | Novara Quickbuy',
   },
-  description: 'Global social commerce marketplace. Discover products through video reviews and community circles.',
+  description: 'The best place to sell products and buy from trusted vendors. Novara Quickbuy is a video-driven social marketplace for discovery, community, and secure shopping.',
   openGraph: {
-    title:       'Novara Quickbuy — Shop. Discover. Connect.',
-    description: 'Global social commerce marketplace. Discover products through video reviews and community circles.',
+    title:       'Novara Quickbuy — Where to Sell & Buy from Trusted Vendors',
+    description: 'Discover where to sell your products and buy from verified, trusted vendors through video reviews and community circles.',
     url:         'https://novaraquickbuy.vercel.app',
     siteName:    'Novara Quickbuy',
     images: [
@@ -45,8 +46,8 @@ export const metadata = {
   },
   twitter: {
     card:        'summary_large_image',
-    title:       'Novara Quickbuy — Shop. Discover. Connect.',
-    description: 'Global social commerce marketplace. Discover products through video.',
+    title:       'Novara Quickbuy — Where to Sell & Buy from Trusted Vendors',
+    description: 'The best social marketplace to sell products and find trusted vendors worldwide.',
     images:      ['/og-image.png'],
   },
   icons: {
@@ -54,14 +55,21 @@ export const metadata = {
     apple: '/novara-icon.svg',
   },
   manifest: '/manifest.json',
+  applicationName: 'Novara Quickbuy',
+  appleMobileWebAppTitle: 'Novara Quickbuy',
+  appleMobileWebAppStatusBarStyle: 'default',
+  formatDetection: {
+    telephone: false,
+  },
+  category: 'shopping',
+  classification: 'Marketplace',
 }
 
 export const viewport = {
-  width: 'device-width', initialScale: 1, maximumScale: 1,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#16A34A' },
-    { media: '(prefers-color-scheme: dark)',  color: '#052E16' },
-  ],
+  width: 'device-width', 
+  initialScale: 1, 
+  maximumScale: 1,
+  themeColor: '#16A34A',
 }
 
 export default function RootLayout({ children }) {
@@ -69,6 +77,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${plusJakarta.variable} ${notoArabic.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased">
         <Providers>
+          <StructuredData />
           {children}
         </Providers>
         <UpdateCheck />

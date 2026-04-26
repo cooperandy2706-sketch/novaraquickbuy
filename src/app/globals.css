@@ -105,9 +105,7 @@ body {
 * { scrollbar-width: thin; scrollbar-color: #7FA48F transparent; }
 
 :focus-visible {
-  outline: 2px solid #1B4332;
-  outline-offset: 2px;
-  border-radius: 6px;
+  outline: none;
 }
 
 ::selection { background: #A4BFAF; color: #09140F; }
