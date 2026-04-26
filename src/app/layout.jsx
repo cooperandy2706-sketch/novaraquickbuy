@@ -72,13 +72,17 @@ export const viewport = {
   themeColor: '#16A34A',
 }
 
+import PushNotificationProvider from '@/components/providers/PushNotificationProvider'
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${plusJakarta.variable} ${notoArabic.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased">
         <Providers>
-          <StructuredData />
-          {children}
+          <PushNotificationProvider>
+            <StructuredData />
+            {children}
+          </PushNotificationProvider>
         </Providers>
         <UpdateCheck />
         <Toaster

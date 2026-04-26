@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "484684040601",
+    "project_id": "novaraquicbuy",
+    "storage_bucket": "novaraquicbuy.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:484684040601:android:6151e1407c0c9fe5b9ab08",
+        "android_client_info": {
+          "package_name": "novara.app.quickbuy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9AQhadhLe18D90g1c-UlUvforL8QyZBo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

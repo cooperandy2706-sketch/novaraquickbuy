@@ -75,6 +75,28 @@ export async function placeOrder(orderData) {
       created_by: user.id
     })
 
+    // ── 4. Send Push Notifications ───────────────────────────
+    try {
+      const { sendPushNotification } = await import('@/lib/pushNotifier')
+      
+      // Notify Vendor
+      await sendPushNotification(
+        vendor_id, 
+        'New Order Received! 🛍️', 
+        `You have a new order #${order.order_number} for ${currency} ${total_amount.toFixed(2)}.`
+      )
+
+      // Notify Buyer
+      await sendPushNotification(
+        user.id,
+        'Order Placed Successfully',
+        `Your order #${order.order_number} has been sent to the vendor for approval.`
+      )
+    } catch (pushError) {
+      console.error('Failed to send push notifications for new order:', pushError)
+      // We don't fail the order if the push fails
+    }
+
     return { success: true, order_id: order.id }
 
   } catch (error) {

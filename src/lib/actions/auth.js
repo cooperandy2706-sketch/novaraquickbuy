@@ -44,13 +44,6 @@ export async function signUp({ full_name, email, password, role }) {
         updated_at:          new Date().toISOString(),
       }, { onConflict: 'user_id' })
     }
-
-    // Send Welcome Email via Resend
-    try {
-      await NotificationService.sendWelcomeEmail(email, full_name)
-    } catch (err) {
-      console.error('Failed to send welcome email:', err)
-    }
   }
 
   return { success: true, user: data.user }
@@ -72,6 +65,18 @@ export async function signIn({ email, password }) {
     .from('users')
     .update({ last_seen_at: new Date().toISOString() })
     .eq('id', data.user.id)
+
+  // Send a security push notification for login
+  try {
+    const { sendPushNotification } = await import('@/lib/pushNotifier')
+    await sendPushNotification(
+      data.user.id,
+      'New Login Detected 🛡️',
+      'Your Novara Quickbuy account was just accessed. If this wasn\'t you, please change your password.'
+    )
+  } catch (err) {
+    console.error('Failed to send login push notification:', err)
+  }
 
   return { success: true, user: data.user }
 }
