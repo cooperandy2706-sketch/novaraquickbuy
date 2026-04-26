@@ -708,6 +708,7 @@ export default function VideoFeedPage() {
 
   return (
     <div className="min-h-screen bg-neutral-50/30">
+      <h1 className="sr-only">Novara Quickbuy — Trusted Vendors and Video Feed</h1>
       {/* ── Scrollable Search Header ── */}
       <div className="bg-white/70 backdrop-blur-3xl border-b border-neutral-200/50 relative z-[60]">
         <div className="w-full mx-auto px-2 sm:px-4 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">

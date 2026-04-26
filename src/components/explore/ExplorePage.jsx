@@ -421,6 +421,7 @@ export default function ExplorePage() {
 
   return (
     <div className="min-h-screen bg-surface transition-colors duration-300">
+      <h1 className="sr-only">Novara Quickbuy — Discover Where to Buy from Trusted Vendors</h1>
 
       {/* ── SUPER ADMIN HERO SECTION ────────────────────────────── */}
       <div className="page pt-6">
