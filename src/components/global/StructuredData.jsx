@@ -26,7 +26,7 @@ export default function StructuredData() {
     "logo": "https://novaraquickbuy.vercel.app/novara-icon.svg",
     "sameAs": [
       "https://facebook.com/novaraquickbuy",
-      "https://twitter.com/novaraquickbuy",
+      "https://x.com/novaraquickbuy",
       "https://instagram.com/novaraquickbuy"
     ]
   }

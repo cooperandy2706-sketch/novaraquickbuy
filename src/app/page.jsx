@@ -1,18 +1,40 @@
 'use client'
 // FILE: src/app/page.jsx
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
   ShieldCheck, Video, Users, ShoppingBag, 
   ArrowRight, CheckCircle2, Star, Zap,
-  Globe, Heart, MessageSquare, TrendingUp
+  Globe, Heart, MessageSquare, TrendingUp,
+  Monitor, Smartphone, Apple, Download
 } from 'lucide-react'
 import Link from 'next/link'
 
-import { useAuthStore }   from '@/store/authStore'
-import { useRouter }       from 'next/navigation'
-import { useEffect }       from 'react'
+import { useAuthStore } from '@/store/authStore'
+import { useRouter }    from 'next/navigation'
+
+// ── Download URLs — update these once files are hosted ──────────────────────
+const DOWNLOAD_LINKS = {
+  mac:     '/downloads/Novara-Quickbuy-arm64.dmg',
+  windows: '/downloads/Novara-Quickbuy-Setup.exe',
+  android: '/downloads/Novara-Quickbuy.apk',
+  ios:     'https://testflight.apple.com/join/XXXXXXXX', // Replace with your TestFlight link
+}
+
+// ── Detect platform on the client ───────────────────────────────────────────
+function usePlatform() {
+  const [platform, setPlatform] = useState(null)
+  useEffect(() => {
+    const ua = navigator.userAgent
+    if (/android/i.test(ua))                                   setPlatform('android')
+    else if (/ipad|iphone|ipod/i.test(ua))                     setPlatform('ios')
+    else if (/macintosh|mac os x/i.test(ua))                   setPlatform('mac')
+    else if (/windows/i.test(ua))                              setPlatform('windows')
+    else                                                        setPlatform('other')
+  }, [])
+  return platform
+}
 
 const Feature = ({ icon: Icon, title, desc }) => (
   <motion.div 
@@ -29,9 +51,49 @@ const Feature = ({ icon: Icon, title, desc }) => (
   </motion.div>
 )
 
+// ── Per-platform download card config ──────────────────────────────────────
+const PLATFORM_CONFIG = {
+  mac: {
+    label: 'Download for Mac',
+    sub: 'macOS 11+ · Apple Silicon & Intel',
+    href: DOWNLOAD_LINKS.mac,
+    badge: null,
+    primary: true,
+  },
+  windows: {
+    label: 'Download for Windows',
+    sub: 'Windows 10 / 11 · 64-bit installer',
+    href: DOWNLOAD_LINKS.windows,
+    badge: null,
+    primary: true,
+  },
+  android: {
+    label: 'Download for Android',
+    sub: 'Direct APK · Android 8.0+',
+    href: DOWNLOAD_LINKS.android,
+    badge: '⚡ No Play Store needed',
+    primary: true,
+  },
+  ios: {
+    label: 'Join via TestFlight',
+    sub: 'iPhone & iPad · iOS 15+',
+    href: DOWNLOAD_LINKS.ios,
+    badge: 'Beta Access',
+    primary: true,
+  },
+  other: {
+    label: 'Get the App',
+    sub: 'Available for Mac, Windows & Android',
+    href: '#download',
+    badge: null,
+    primary: false,
+  },
+}
+
 export default function RootPage() {
   const { user } = useAuthStore()
   const router = useRouter()
+  const platform = usePlatform()
 
   useEffect(() => {
     if (user) {
@@ -83,6 +145,20 @@ export default function RootPage() {
             <Link href="/register" className="px-10 py-5 bg-surface-2 text-primary border border-border rounded-[2rem] font-black uppercase tracking-widest hover:bg-surface-3 active:scale-95 transition-all">
               Become a Vendor
             </Link>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mt-14 flex flex-col items-center justify-center gap-4"
+          >
+            <p className="text-xs font-bold text-muted uppercase tracking-[0.2em]">Available on all your devices</p>
+            <a href="#download" className="flex items-center gap-8 text-neutral-400 hover:text-brand transition-colors cursor-pointer group">
+              <svg viewBox="0 0 384 512" fill="currentColor" width="24" height="24" className="group-hover:text-neutral-800 transition-colors"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+              <svg viewBox="0 0 448 512" fill="currentColor" width="22" height="22" className="group-hover:text-[#00a4ef] transition-colors"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>
+              <svg viewBox="0 0 512 512" fill="currentColor" width="26" height="26" className="group-hover:text-[#3DDC84] transition-colors"><path d="M325.3 234.3c-6.5 0-11.8-5.3-11.8-11.8 0-6.5 5.3-11.8 11.8-11.8 6.5 0 11.8 5.3 11.8 11.8 0 6.5-5.3 11.8-11.8 11.8zm-138.6 0c-6.5 0-11.8-5.3-11.8-11.8 0-6.5 5.3-11.8 11.8-11.8 6.5 0 11.8 5.3 11.8 11.8 0 6.5-5.3 11.8-11.8 11.8zm231.8-85.3l37.2-64.4c1.3-2.3.5-5.3-1.8-6.6-2.3-1.3-5.3-.5-6.6 1.8L409 146c-44-19.6-92.4-30.5-144-30.5s-100 10.9-144 30.5l-38.4-66.2c-1.3-2.3-4.3-3.1-6.6-1.8-2.3 1.3-3.1 4.3-1.8 6.6l37.2 64.4C44.7 186 0 252.1 0 330.8h512c0-78.7-44.7-144.8-111.5-181.8z"/></svg>
+            </a>
           </motion.div>
         </div>
 
@@ -246,6 +322,121 @@ export default function RootPage() {
               <p className="text-secondary leading-relaxed font-medium">Yes! Novara supports multi-currency payments and global shipping integrations, making it a powerful choice for businesses looking to expand beyond their local borders.</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── Download Section ─────────────────────────────────────── */}
+      <section id="download" className="py-24 bg-surface/50 backdrop-blur-3xl border-y border-border">
+        <div className="page">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-brand/10 text-brand rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6"
+            >
+              <Download size={13} /> Get the App
+            </motion.div>
+            <h2 className="text-3xl md:text-5xl font-black text-primary uppercase tracking-tighter mb-4">
+              Novara on Every Device
+            </h2>
+            <p className="text-muted font-bold uppercase tracking-widest text-xs">
+              Mac · Windows · Android · iPhone
+            </p>
+          </div>
+
+          {/* Detected platform — big hero CTA */}
+          {platform && PLATFORM_CONFIG[platform] && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-lg mx-auto mb-16"
+            >
+              <a
+                href={PLATFORM_CONFIG[platform].href}
+                download={platform === 'mac' || platform === 'windows' || platform === 'android'}
+                className="group flex flex-col items-center gap-3 p-8 bg-brand text-white rounded-[2.5rem] shadow-2xl shadow-brand/25 hover:scale-[1.02] active:scale-95 transition-all"
+              >
+                {PLATFORM_CONFIG[platform].badge && (
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-white/20 px-3 py-1 rounded-full">
+                    {PLATFORM_CONFIG[platform].badge}
+                  </span>
+                )}
+                <span className="text-2xl font-black">{PLATFORM_CONFIG[platform].label}</span>
+                <span className="text-brand-100 text-sm font-medium">{PLATFORM_CONFIG[platform].sub}</span>
+                <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+              </a>
+            </motion.div>
+          )}
+
+          {/* All platforms grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              {
+                key: 'mac',
+                icon: <svg viewBox="0 0 384 512" fill="currentColor" width="40" height="40" className="text-neutral-800"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>,
+                name: 'macOS',
+                sub: 'Direct .dmg',
+                href: DOWNLOAD_LINKS.mac,
+                download: true,
+              },
+              {
+                key: 'windows',
+                icon: <svg viewBox="0 0 448 512" fill="currentColor" width="38" height="38" className="text-[#00a4ef]"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>,
+                name: 'Windows',
+                sub: 'Direct .exe installer',
+                href: DOWNLOAD_LINKS.windows,
+                download: true,
+              },
+              {
+                key: 'android',
+                icon: <svg viewBox="0 0 512 512" fill="currentColor" width="42" height="42" className="text-[#3DDC84]"><path d="M325.3 234.3c-6.5 0-11.8-5.3-11.8-11.8 0-6.5 5.3-11.8 11.8-11.8 6.5 0 11.8 5.3 11.8 11.8 0 6.5-5.3 11.8-11.8 11.8zm-138.6 0c-6.5 0-11.8-5.3-11.8-11.8 0-6.5 5.3-11.8 11.8-11.8 6.5 0 11.8 5.3 11.8 11.8 0 6.5-5.3 11.8-11.8 11.8zm231.8-85.3l37.2-64.4c1.3-2.3.5-5.3-1.8-6.6-2.3-1.3-5.3-.5-6.6 1.8L409 146c-44-19.6-92.4-30.5-144-30.5s-100 10.9-144 30.5l-38.4-66.2c-1.3-2.3-4.3-3.1-6.6-1.8-2.3 1.3-3.1 4.3-1.8 6.6l37.2 64.4C44.7 186 0 252.1 0 330.8h512c0-78.7-44.7-144.8-111.5-181.8z"/></svg>,
+                name: 'Android',
+                sub: 'Direct .apk sideload',
+                href: DOWNLOAD_LINKS.android,
+                download: true,
+              },
+              {
+                key: 'ios',
+                icon: <svg viewBox="0 0 384 512" fill="currentColor" width="40" height="40" className="text-neutral-800"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>,
+                name: 'iPhone',
+                sub: 'TestFlight beta',
+                href: DOWNLOAD_LINKS.ios,
+                download: false,
+              },
+            ].map(({ key, icon, name, sub, href, download }) => (
+              <motion.a
+                key={key}
+                href={href}
+                download={download || undefined}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className={`flex flex-col items-center justify-center text-center gap-3 p-6 rounded-[2rem] border transition-all hover:-translate-y-1 hover:shadow-xl cursor-pointer
+                  ${ platform === key
+                    ? 'bg-brand/10 border-brand/30 ring-2 ring-brand/20'
+                    : 'bg-white border-neutral-100'
+                  }`}
+              >
+                <div className="flex items-center justify-center h-12 w-12">{icon}</div>
+                <div className="text-center">
+                  <p className="font-black text-primary text-sm uppercase tracking-tight">{name}</p>
+                  <p className="text-muted text-xs font-medium mt-1">{sub}</p>
+                </div>
+                {platform === key && (
+                  <span className="text-[9px] font-black uppercase tracking-[0.15em] text-brand bg-brand/10 px-2 py-1 rounded-full">
+                    Your Device
+                  </span>
+                )}
+              </motion.a>
+            ))}
+          </div>
+
+          {/* Android sideload note */}
+          <p className="text-center text-xs text-muted font-medium mt-8 max-w-md mx-auto">
+            Android users: after downloading the APK, go to <strong>Settings → Install unknown apps</strong> and enable it for your browser to complete the install.
+          </p>
         </div>
       </section>
 

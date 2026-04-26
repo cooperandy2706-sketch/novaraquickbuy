@@ -1,12 +1,91 @@
 {
   "name": "novara-quickbuy",
   "version": "0.1.0",
+  "description": "Novara Quickbuy — A video-first social marketplace for buying and selling from trusted vendors.",
+  "author": "Novara Quickbuy",
   "private": true,
+  "main": "electron/main.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "electron": "electron electron/main.js",
+    "electron:build": "electron-builder",
+    "electron:build:mac": "electron-builder --mac",
+    "electron:build:win": "electron-builder --win",
+    "electron:build:linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "novara.app.quickbuy",
+    "productName": "Novara Quickbuy",
+    "artifactName": "Novara-Quickbuy-${os}.${ext}",
+    "copyright": "Copyright © 2026 Novara Quickbuy",
+    "icon": "public/novara-icon.png",
+    "files": [
+      "electron/**/*",
+      "public/novara-icon.png",
+      "!node_modules/**",
+      "!src/**",
+      "!.next/**",
+      "!android/**",
+      "!ios/**",
+      "!public/screenshots/**",
+      "!supabase/**"
+    ],
+    "mac": {
+      "category": "public.app-category.shopping",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/novara-icon.png"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/novara-icon.png"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Network"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "dmg": {
+      "title": "Novara Quickbuy",
+      "background": null,
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    }
   },
   "dependencies": {
     "@capacitor/android": "^8.3.1",
@@ -60,6 +139,8 @@
   },
   "devDependencies": {
     "babel-plugin-react-compiler": "1.0.0",
+    "electron": "^36.9.5",
+    "electron-builder": "^25.1.8",
     "eslint": "^9",
     "eslint-config-next": "^16.1.6"
   }
