@@ -10,6 +10,10 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
+import { useAuthStore }   from '@/store/authStore'
+import { useRouter }       from 'next/navigation'
+import { useEffect }       from 'react'
+
 const Feature = ({ icon: Icon, title, desc }) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
@@ -26,6 +30,17 @@ const Feature = ({ icon: Icon, title, desc }) => (
 )
 
 export default function RootPage() {
+  const { user } = useAuthStore()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (user) {
+      router.replace('/feed')
+    }
+  }, [user, router])
+
+  // If user is logged in, show nothing (it will redirect anyway)
+  if (user) return null
   return (
     <div className="min-h-screen bg-surface selection:bg-brand/10 selection:text-brand transition-colors duration-300">
       
