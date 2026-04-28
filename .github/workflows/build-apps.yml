@@ -39,7 +39,9 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: '22'
-    - run: pip install setuptools   # Restores distutils removed in Python 3.12 (needed by node-gyp)
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
     - run: npm install --legacy-peer-deps
     - run: npm run electron:build:win
       env:
@@ -60,8 +62,7 @@ jobs:
         node-version: '22'
     - uses: actions/setup-python@v5
       with:
-        python-version: '3.x'   # GitHub-managed Python; pip has no PEP-668 restrictions
-    - run: pip install setuptools
+        python-version: '3.11'   # Use 3.11 specifically, as it still has distutils built-in, avoiding all these setuptools/gyp issues entirely
     - run: npm install --legacy-peer-deps
     - run: npm run electron:build:mac
       env:
