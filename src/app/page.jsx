@@ -1,7 +1,7 @@
 'use client'
 // FILE: src/app/page.jsx
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { 
   ShieldCheck, Video, Users, ShoppingBag, 
@@ -13,6 +13,7 @@ import Link from 'next/link'
 
 import { useAuthStore } from '@/store/authStore'
 import { useRouter }    from 'next/navigation'
+import DownloadProgressModal from '@/components/global/DownloadProgressModal'
 
 // ── Download URLs — update these once files are hosted ──────────────────────
 const DOWNLOAD_LINKS = {
@@ -95,6 +96,28 @@ export default function RootPage() {
   const router = useRouter()
   const platform = usePlatform()
 
+  // ── Download modal state ──────────────────────────────────────────────────
+  const [dlModal, setDlModal] = useState(null) // { platform, href, isExternal }
+
+  const openDownload = useCallback((platformKey, href, isExternal = false) => {
+    setDlModal({ platform: platformKey, href, isExternal })
+  }, [])
+
+  const handleActualDownload = useCallback(() => {
+    if (!dlModal) return
+    if (dlModal.isExternal) {
+      window.open(dlModal.href, '_blank', 'noopener noreferrer')
+    } else {
+      // Trigger native browser download
+      const a = document.createElement('a')
+      a.href = dlModal.href
+      a.download = ''
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+    }
+  }, [dlModal])
+
   useEffect(() => {
     if (user) {
       router.replace('/feed')
@@ -104,6 +127,7 @@ export default function RootPage() {
   // If user is logged in, show nothing (it will redirect anyway)
   if (user) return null
   return (
+    <>
     <div className="min-h-screen bg-surface selection:bg-brand/10 selection:text-brand transition-colors duration-300">
       
       {/* ── Hero Section ────────────────────────────────────────── */}
@@ -353,10 +377,14 @@ export default function RootPage() {
               viewport={{ once: true }}
               className="max-w-lg mx-auto mb-16"
             >
-              <a
-                href={PLATFORM_CONFIG[platform].href}
-                download={platform === 'mac' || platform === 'windows' || platform === 'android'}
-                className="group flex flex-col items-center gap-3 p-8 bg-brand text-white rounded-[2.5rem] shadow-2xl shadow-brand/25 hover:scale-[1.02] active:scale-95 transition-all"
+              <button
+                id={`download-hero-${platform}`}
+                onClick={() => openDownload(
+                  platform,
+                  PLATFORM_CONFIG[platform].href,
+                  platform === 'ios'
+                )}
+                className="group w-full flex flex-col items-center gap-3 p-8 bg-brand text-white rounded-[2.5rem] shadow-2xl shadow-brand/25 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
               >
                 {PLATFORM_CONFIG[platform].badge && (
                   <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-white/20 px-3 py-1 rounded-full">
@@ -366,7 +394,7 @@ export default function RootPage() {
                 <span className="text-2xl font-black">{PLATFORM_CONFIG[platform].label}</span>
                 <span className="text-brand-100 text-sm font-medium">{PLATFORM_CONFIG[platform].sub}</span>
                 <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
-              </a>
+              </button>
             </motion.div>
           )}
 
@@ -405,11 +433,11 @@ export default function RootPage() {
                 href: DOWNLOAD_LINKS.ios,
                 download: false,
               },
-            ].map(({ key, icon, name, sub, href, download }) => (
-              <motion.a
+            ].map(({ key, icon, name, sub, href, download: isDirect }) => (
+              <motion.button
                 key={key}
-                href={href}
-                download={download || undefined}
+                id={`download-card-${key}`}
+                onClick={() => openDownload(key, href, !isDirect)}
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -429,7 +457,7 @@ export default function RootPage() {
                     Your Device
                   </span>
                 )}
-              </motion.a>
+              </motion.button>
             ))}
           </div>
 
@@ -466,5 +494,15 @@ export default function RootPage() {
         </div>
       </footer>
     </div>
+
+      {/* ── Download Progress Modal ──────────────────────────────── */}
+      {dlModal && (
+        <DownloadProgressModal
+          platform={dlModal.platform}
+          onClose={() => setDlModal(null)}
+          onStartDownload={handleActualDownload}
+        />
+      )}
+    </>
   )
 }
