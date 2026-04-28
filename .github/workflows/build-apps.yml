@@ -58,7 +58,10 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: '22'
-    - run: python3 -m pip install --user setuptools  # --user avoids PEP-668 block; installs to ~/.local not system Python
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'   # GitHub-managed Python; pip has no PEP-668 restrictions
+    - run: pip install setuptools
     - run: npm install --legacy-peer-deps
     - run: npm run electron:build:mac
       env:
