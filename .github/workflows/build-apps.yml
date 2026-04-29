@@ -123,11 +123,17 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Rename EXE
+        shell: bash
+        run: |
+          mkdir -p dist-windows
+          cp dist/*.exe dist-windows/Novara-Quickbuy-Windows.exe
+
       - name: Upload EXE artifact
         uses: actions/upload-artifact@v4
         with:
           name: Novara-Quickbuy-Windows-EXE
-          path: dist/*.exe
+          path: dist-windows/Novara-Quickbuy-Windows.exe
           retention-days: 7
 
   # ─────────────────────────────────────────────────────────────────────────────

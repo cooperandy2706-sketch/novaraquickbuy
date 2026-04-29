@@ -1,0 +1,22 @@
+=========================================
+  NOVARA QUICKBUY — WINDOWS INSTALL GUIDE
+=========================================
+
+STEP 1: Run the installer (Novara-Quickbuy-Windows.exe)
+
+STEP 2: If Windows SmartScreen appears saying
+        "Windows protected your PC":
+
+  → Click "More info"
+  → Click "Run anyway"
+
+  ⚠️  This warning appears because the app is not yet signed with
+      a paid Microsoft certificate. The app is safe to install.
+
+STEP 3: Follow the installer steps and click "Install".
+
+STEP 4: Launch "Novara Quickbuy" from your Desktop or Start Menu.
+
+-----------------------------------------
+Need help? Visit: https://novaraquickbuy.vercel.app
+=========================================
