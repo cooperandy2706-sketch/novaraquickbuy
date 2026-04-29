@@ -1,75 +1,232 @@
-name: Build Apps (Windows, Mac, Android)
+name: Build & Release Apps (Windows, Mac, Android)
 
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
 
+# Give the workflow permission to create GitHub Releases
+permissions:
+  contents: write
+
 jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Android: Build a SIGNED release APK so phones can install it
+  # ─────────────────────────────────────────────────────────────────────────────
   build-android:
     name: Build Android APK
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '22'          # Capacitor CLI v8 requires Node >=22
-    - run: npm install --legacy-peer-deps
-    - uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: '21'   # capacitor.build.gradle requires VERSION_21
-    - run: npx cap sync android
-    - name: Build Android APK
-      working-directory: ./android
-      run: |
-        chmod +x ./gradlew
-        ./gradlew assembleDebug
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: Novara-Quickbuy-APK
-        path: android/app/build/outputs/apk/debug/app-debug.apk
+      - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm install --legacy-peer-deps
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - run: npx cap sync android
+
+      # ── Generate / restore signing keystore ──────────────────────────────────
+      # The keystore is stored as a base64 secret in GitHub → Settings → Secrets.
+      # If the secret doesn't exist yet, we generate a fresh self-signed keystore
+      # so the build always produces a signed APK.
+      - name: Set up signing keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          KEYSTORE_PATH="${GITHUB_WORKSPACE}/android/app/release.keystore"
+          echo "KEYSTORE_PATH=${KEYSTORE_PATH}" >> $GITHUB_ENV
+
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            # Restore existing keystore from secret
+            echo "Restoring keystore from secret..."
+            echo "$KEYSTORE_BASE64" | base64 --decode > "${KEYSTORE_PATH}"
+            echo "STORE_PASSWORD=${STORE_PASSWORD}" >> $GITHUB_ENV
+            echo "KEY_ALIAS=${KEY_ALIAS}"           >> $GITHUB_ENV
+            echo "KEY_PASSWORD=${KEY_PASSWORD}"     >> $GITHUB_ENV
+          else
+            # Auto-generate a fresh self-signed keystore (first run or no secret set)
+            echo "No keystore secret found — generating a fresh self-signed keystore..."
+            keytool -genkeypair \
+              -alias novaraquickbuy \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 9125 \
+              -keystore "${KEYSTORE_PATH}" \
+              -storepass novaraquickbuy123 \
+              -keypass   novaraquickbuy123 \
+              -dname "CN=Novara Quickbuy, OU=App, O=Novara, L=Unknown, S=Unknown, C=US" \
+              -noprompt
+            echo "STORE_PASSWORD=novaraquickbuy123" >> $GITHUB_ENV
+            echo "KEY_ALIAS=novaraquickbuy"         >> $GITHUB_ENV
+            echo "KEY_PASSWORD=novaraquickbuy123"   >> $GITHUB_ENV
+            echo "::notice::⚠️ A temporary keystore was generated. For consistent APK signing across builds, add KEYSTORE_BASE64, STORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD to your repository secrets."
+          fi
+
+      - name: Build signed release APK
+        working-directory: ./android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleRelease \
+            -PKEYSTORE_PATH="${KEYSTORE_PATH}" \
+            -PSTORE_PASSWORD="${STORE_PASSWORD}" \
+            -PKEY_ALIAS="${KEY_ALIAS}" \
+            -PKEY_PASSWORD="${KEY_PASSWORD}"
+        env:
+          KEYSTORE_PATH: ${{ env.KEYSTORE_PATH }}
+          STORE_PASSWORD: ${{ env.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ env.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ env.KEY_PASSWORD }}
+
+      - name: Rename APK
+        run: |
+          mkdir -p dist-android
+          cp android/app/build/outputs/apk/release/app-release.apk \
+             dist-android/Novara-Quickbuy.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Novara-Quickbuy-APK
+          path: dist-android/Novara-Quickbuy.apk
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Windows: Build EXE installer
+  # ─────────────────────────────────────────────────────────────────────────────
   build-windows:
     name: Build Windows EXE
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-    - run: npm install --legacy-peer-deps
-    - run: npm run electron:build:win
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Upload EXE
-      uses: actions/upload-artifact@v4
-      with:
-        name: Novara-Quickbuy-Windows-EXE
-        path: dist/*.exe
+      - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: npm install --legacy-peer-deps
+
+      - run: npm run electron:build:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Novara-Quickbuy-Windows-EXE
+          path: dist/*.exe
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # macOS: Build DMG
+  # ─────────────────────────────────────────────────────────────────────────────
   build-mac:
     name: Build macOS DMG
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'   # Use 3.11 specifically, as it still has distutils built-in, avoiding all these setuptools/gyp issues entirely
-    - run: npm install --legacy-peer-deps
-    - run: npm run electron:build:mac
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        CSC_IDENTITY_AUTO_DISCOVERY: false
-    - name: Upload DMG
-      uses: actions/upload-artifact@v4
-      with:
-        name: Novara-Quickbuy-Mac-DMG
-        path: dist/*.dmg
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: npm install --legacy-peer-deps
+
+      - run: npm run electron:build:mac
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Novara-Quickbuy-Mac-DMG
+          path: dist/*.dmg
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Publish: Create a GitHub Release with direct public download links
+  # ─────────────────────────────────────────────────────────────────────────────
+  publish-release:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    needs: [build-android, build-windows, build-mac]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Android APK
+        uses: actions/download-artifact@v4
+        with:
+          name: Novara-Quickbuy-APK
+          path: release-files/
+
+      - name: Download Windows EXE
+        uses: actions/download-artifact@v4
+        with:
+          name: Novara-Quickbuy-Windows-EXE
+          path: release-files/
+
+      - name: Download macOS DMG
+        uses: actions/download-artifact@v4
+        with:
+          name: Novara-Quickbuy-Mac-DMG
+          path: release-files/
+
+      - name: Get short SHA
+        id: sha
+        run: echo "short=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ steps.sha.outputs.short }}
+          name: "Novara Quickbuy — Build ${{ steps.sha.outputs.short }}"
+          body: |
+            ## 📦 Download Novara Quickbuy
+
+            | Platform | Download |
+            |----------|----------|
+            | 🤖 Android | [Novara-Quickbuy.apk](./Novara-Quickbuy.apk) |
+            | 🍎 macOS | [Novara-Quickbuy-Mac.dmg](./Novara-Quickbuy-Mac.dmg) |
+            | 🪟 Windows | [Novara-Quickbuy-Windows.exe](./Novara-Quickbuy-Windows.exe) |
+
+            ---
+
+            ### 🤖 Android Install Instructions
+            1. Download `Novara-Quickbuy.apk` on your phone
+            2. Go to **Settings → Apps → Special app access → Install unknown apps**
+            3. Allow your browser (e.g. Chrome) to install unknown apps
+            4. Open the downloaded APK and tap **Install**
+
+            ### 🍎 macOS Install Instructions
+            1. Open the `.dmg` and drag the app to **Applications**
+            2. **Right-click** the app → **Open** → **Open** again
+            3. Or run in Terminal: `xattr -cr "/Applications/Novara Quickbuy.app"`
+
+            ### 🪟 Windows Install Instructions
+            1. Download and run the `.exe` installer
+            2. If Windows SmartScreen appears, click **More info** → **Run anyway**
+
+            ---
+            *Built from commit `${{ github.sha }}`*
+          files: release-files/**/*
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
