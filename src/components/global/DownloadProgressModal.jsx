@@ -5,41 +5,51 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, CheckCircle2, Download, Sparkles, Zap, Shield, Rocket } from 'lucide-react'
 
+import { LogoIcon } from '@/components/brand/Logo'
+
+// ── Icons ──────────────────────────────────────────────────────────────────────
+const ICONS = {
+  mac: <svg viewBox="0 0 384 512" fill="currentColor" width="40" height="40"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>,
+  windows: <svg viewBox="0 0 448 512" fill="currentColor" width="38" height="38"><path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/></svg>,
+  android: <svg viewBox="0 0 512 512" fill="currentColor" width="42" height="42"><path d="M325.3 234.3c-6.5 0-11.8-5.3-11.8-11.8 0-6.5 5.3-11.8 11.8-11.8 6.5 0 11.8 5.3 11.8 11.8 0 6.5-5.3 11.8-11.8 11.8zm-138.6 0c-6.5 0-11.8-5.3-11.8-11.8 0-6.5 5.3-11.8 11.8-11.8 6.5 0 11.8 5.3 11.8 11.8 0 6.5-5.3 11.8-11.8 11.8zm231.8-85.3l37.2-64.4c1.3-2.3.5-5.3-1.8-6.6-2.3-1.3-5.3-.5-6.6 1.8L409 146c-44-19.6-92.4-30.5-144-30.5s-100 10.9-144 30.5l-38.4-66.2c-1.3-2.3-4.3-3.1-6.6-1.8-2.3 1.3-3.1 4.3-1.8 6.6l37.2 64.4C44.7 186 0 252.1 0 330.8h512c0-78.7-44.7-144.8-111.5-181.8z"/></svg>,
+  novara: <LogoIcon size={40} className="text-white" variant="badge" />
+}
+
 // ── Staged download messages per platform ──────────────────────────────────────
 const PLATFORM_MESSAGES = {
   mac: [
-    { icon: '🍎', text: 'Preparing your macOS package…', sub: 'Apple Silicon & Intel ready' },
-    { icon: '📦', text: 'Bundling the .dmg file…', sub: 'Compressing assets' },
-    { icon: '🔐', text: 'Signing & notarizing with Apple…', sub: 'Gatekeeper approved' },
-    { icon: '⚡', text: 'Turbo-charging the download…', sub: 'Almost at full speed' },
-    { icon: '🎉', text: 'Your download has started!', sub: 'Check your Downloads folder' },
+    { icon: ICONS.mac, text: 'Preparing your macOS package…', sub: 'Apple Silicon & Intel ready' },
+    { icon: ICONS.mac, text: 'Bundling the .dmg file…', sub: 'Compressing assets' },
+    { icon: ICONS.mac, text: 'Signing & notarizing with Apple…', sub: 'Gatekeeper approved' },
+    { icon: ICONS.mac, text: 'Turbo-charging the download…', sub: 'Almost at full speed' },
+    { icon: ICONS.mac, text: 'Your download has started!', sub: 'Check your Downloads folder' },
   ],
   windows: [
-    { icon: '🪟', text: 'Building your Windows installer…', sub: 'NSIS packager running' },
-    { icon: '📦', text: 'Bundling app resources…', sub: 'Packing DLLs & assets' },
-    { icon: '🛡️', text: 'Running security scan…', sub: 'SmartScreen approved ✓' },
-    { icon: '⚡', text: 'Pushing bits to your machine…', sub: 'Download accelerating' },
-    { icon: '🎉', text: 'Your download has started!', sub: 'Run the .exe to install' },
+    { icon: ICONS.windows, text: 'Building your Windows installer…', sub: 'NSIS packager running' },
+    { icon: ICONS.windows, text: 'Bundling app resources…', sub: 'Packing DLLs & assets' },
+    { icon: ICONS.windows, text: 'Running security scan…', sub: 'SmartScreen approved ✓' },
+    { icon: ICONS.windows, text: 'Pushing bits to your machine…', sub: 'Download accelerating' },
+    { icon: ICONS.windows, text: 'Your download has started!', sub: 'Run the .exe to install' },
   ],
   android: [
-    { icon: '🤖', text: 'Assembling your Android APK…', sub: 'Gradle build complete' },
-    { icon: '📦', text: 'Optimising APK size…', sub: 'ProGuard minifying' },
-    { icon: '🔐', text: 'Signing the release keystore…', sub: 'v2 Signature scheme' },
-    { icon: '⚡', text: 'Sending APK your way…', sub: 'No Play Store needed ⚡' },
-    { icon: '🎉', text: 'Your download has started!', sub: 'Enable "Unknown Sources" to install' },
+    { icon: ICONS.android, text: 'Assembling your Android APK…', sub: 'Gradle build complete' },
+    { icon: ICONS.android, text: 'Optimising APK size…', sub: 'ProGuard minifying' },
+    { icon: ICONS.android, text: 'Signing the release keystore…', sub: 'v2 Signature scheme' },
+    { icon: ICONS.android, text: 'Sending APK your way…', sub: 'No Play Store needed ⚡' },
+    { icon: ICONS.android, text: 'Your download has started!', sub: 'Enable "Unknown Sources" to install' },
   ],
   ios: [
-    { icon: '🍏', text: 'Opening TestFlight portal…', sub: 'Redirecting to Apple' },
-    { icon: '✈️', text: 'Preparing beta invite…', sub: 'One tap to join' },
-    { icon: '🔐', text: 'Verifying beta credentials…', sub: 'TestFlight approved ✓' },
-    { icon: '⚡', text: 'Redirecting you now…', sub: 'Install via TestFlight app' },
-    { icon: '🎉', text: 'Opening TestFlight!', sub: 'Accept the invite to install' },
+    { icon: ICONS.mac, text: 'Opening TestFlight portal…', sub: 'Redirecting to Apple' },
+    { icon: ICONS.mac, text: 'Preparing beta invite…', sub: 'One tap to join' },
+    { icon: ICONS.mac, text: 'Verifying beta credentials…', sub: 'TestFlight approved ✓' },
+    { icon: ICONS.mac, text: 'Redirecting you now…', sub: 'Install via TestFlight app' },
+    { icon: ICONS.mac, text: 'Opening TestFlight!', sub: 'Accept the invite to install' },
   ],
   other: [
-    { icon: '🚀', text: 'Locating best package for you…', sub: 'Detecting your OS' },
-    { icon: '📦', text: 'Preparing download…', sub: 'Fetching latest release' },
-    { icon: '⚡', text: 'Almost ready…', sub: 'Optimizing for your device' },
-    { icon: '🎉', text: 'Ready!', sub: 'Download starting now' },
+    { icon: ICONS.novara, text: 'Locating best package for you…', sub: 'Detecting your OS' },
+    { icon: ICONS.novara, text: 'Preparing download…', sub: 'Fetching latest release' },
+    { icon: ICONS.novara, text: 'Almost ready…', sub: 'Optimizing for your device' },
+    { icon: ICONS.novara, text: 'Ready!', sub: 'Download starting now' },
   ],
 }
 
@@ -181,7 +191,7 @@ export default function DownloadProgressModal({ platform, onClose, onStartDownlo
 
               {/* Icon circle with ring animation */}
               <motion.div
-                className={`relative w-24 h-24 rounded-full bg-gradient-to-br ${config.color} flex items-center justify-center shadow-2xl`}
+                className={`relative w-24 h-24 rounded-full bg-gradient-to-br ${config.color} text-white flex items-center justify-center shadow-2xl`}
                 animate={done ? { scale: [1, 1.15, 1] } : {}}
                 transition={{ duration: 0.5 }}
               >
@@ -206,16 +216,16 @@ export default function DownloadProgressModal({ platform, onClose, onStartDownlo
                       <CheckCircle2 size={44} className="text-white" />
                     </motion.div>
                   ) : (
-                    <motion.span
-                      key={`emoji-${stage}`}
-                      className="text-4xl select-none"
+                    <motion.div
+                      key={`icon-${stage}`}
+                      className="flex items-center justify-center"
                       initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
                       animate={{ opacity: 1, scale: 1, rotate: 0 }}
                       exit={{ opacity: 0, scale: 0.5, rotate: 10 }}
                       transition={{ duration: 0.25 }}
                     >
                       {current.icon}
-                    </motion.span>
+                    </motion.div>
                   )}
                 </AnimatePresence>
               </motion.div>
