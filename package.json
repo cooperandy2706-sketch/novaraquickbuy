@@ -25,6 +25,7 @@
     "files": [
       "electron/**/*",
       "public/novara-icon.png",
+      "public/dmg-background.png",
       "!node_modules/**",
       "!src/**",
       "!.next/**",
@@ -72,17 +73,27 @@
     },
     "dmg": {
       "title": "Novara Quickbuy",
-      "background": null,
+      "background": "public/dmg-background.png",
+      "window": {
+        "width": 540,
+        "height": 380
+      },
       "contents": [
         {
           "x": 130,
-          "y": 220
+          "y": 200
         },
         {
           "x": 410,
-          "y": 220,
+          "y": 200,
           "type": "link",
           "path": "/Applications"
+        },
+        {
+          "x": 270,
+          "y": 340,
+          "type": "file",
+          "path": "electron/OPEN_ME_FIRST.txt"
         }
       ]
     }

@@ -1,0 +1,23 @@
+=========================================
+  NOVARA QUICKBUY — macOS INSTALL GUIDE
+=========================================
+
+STEP 1: Drag "Novara Quickbuy" into the "Applications" folder shown in this window.
+
+STEP 2: Open the app for the first time:
+  → Right-click "Novara Quickbuy" in Applications
+  → Click "Open"
+  → Click "Open" again in the dialog that appears
+
+  ⚠️  macOS may warn "unidentified developer" — this is expected for apps
+      distributed outside the Mac App Store. The app is safe to open.
+
+STEP 3 (alternative): If the above doesn't work, open Terminal and run:
+
+    xattr -cr "/Applications/Novara Quickbuy.app"
+
+  Then double-click the app normally.
+
+-----------------------------------------
+Need help? Visit: https://novaraquickbuy.vercel.app
+=========================================
