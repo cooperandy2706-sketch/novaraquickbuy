@@ -15,11 +15,12 @@ import { useAuthStore } from '@/store/authStore'
 import { useRouter }    from 'next/navigation'
 import DownloadProgressModal from '@/components/global/DownloadProgressModal'
 
-// ── Download URLs — update these once files are hosted ──────────────────────
+// ── Download URLs — served from GitHub Releases (latest tag) ──────────────
+const GH_RELEASE_BASE = 'https://github.com/cooperandy2706-sketch/novaraquickbuy/releases/latest/download'
 const DOWNLOAD_LINKS = {
-  mac:     '/downloads/Novara-Quickbuy-arm64.dmg',
-  windows: '/downloads/Novara-Quickbuy-Setup.exe',
-  android: '/downloads/Novara-Quickbuy.apk',
+  mac:     `${GH_RELEASE_BASE}/Novara-Quickbuy-Mac.dmg`,
+  windows: `${GH_RELEASE_BASE}/Novara-Quickbuy-Windows.exe`,
+  android: `${GH_RELEASE_BASE}/Novara-Quickbuy.apk`,
   ios:     'https://testflight.apple.com/join/XXXXXXXX', // Replace with your TestFlight link
 }
 

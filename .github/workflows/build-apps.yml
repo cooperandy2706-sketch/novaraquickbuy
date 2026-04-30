@@ -160,11 +160,17 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
 
+      - name: Rename DMG
+        shell: bash
+        run: |
+          mkdir -p dist-mac
+          cp dist/*.dmg dist-mac/Novara-Quickbuy-Mac.dmg
+
       - name: Upload DMG artifact
         uses: actions/upload-artifact@v4
         with:
           name: Novara-Quickbuy-Mac-DMG
-          path: dist/*.dmg
+          path: dist-mac/Novara-Quickbuy-Mac.dmg
           retention-days: 7
 
   # ─────────────────────────────────────────────────────────────────────────────
@@ -207,11 +213,11 @@ jobs:
           body: |
             ## 📦 Download Novara Quickbuy
 
-            | Platform | Download |
-            |----------|----------|
-            | 🤖 Android | [Novara-Quickbuy.apk](./Novara-Quickbuy.apk) |
-            | 🍎 macOS | [Novara-Quickbuy-Mac.dmg](./Novara-Quickbuy-Mac.dmg) |
-            | 🪟 Windows | [Novara-Quickbuy-Windows.exe](./Novara-Quickbuy-Windows.exe) |
+            | Platform | File | Download |
+            |----------|------|----------|
+            | 🤖 Android | `Novara-Quickbuy.apk` | [Download](./Novara-Quickbuy.apk) |
+            | 🍎 macOS | `Novara-Quickbuy-Mac.dmg` | [Download](./Novara-Quickbuy-Mac.dmg) |
+            | 🪟 Windows | `Novara-Quickbuy-Windows.exe` | [Download](./Novara-Quickbuy-Windows.exe) |
 
             ---
 
