@@ -106,10 +106,16 @@ export default function RootPage() {
 
   const handleActualDownload = useCallback(() => {
     if (!dlModal) return
-    if (dlModal.isExternal) {
+    // The <a download> trick only works for same-origin URLs.
+    // GitHub Releases (and any https:// link) must use window.open so the
+    // browser follows GitHub's 302 → CDN redirect and starts the real download.
+    const isExternal = dlModal.isExternal ||
+      dlModal.href.startsWith('http://') ||
+      dlModal.href.startsWith('https://')
+    if (isExternal) {
       window.open(dlModal.href, '_blank', 'noopener noreferrer')
     } else {
-      // Trigger native browser download
+      // Same-origin paths only (e.g. /downloads/file.apk)
       const a = document.createElement('a')
       a.href = dlModal.href
       a.download = ''
